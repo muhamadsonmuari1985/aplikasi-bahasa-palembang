@@ -1,1 +1,764 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Bahasa Palembang - Preview Interaktif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #800020;
+      --primary-dark: #500014;
+      --gold: #D4AF37;
+      --gold-light: #FFF3CD;
+      --bg: #F9F6F0;
+      --surface: #FFFFFF;
+      --text: #1C1B1F;
+      --text-muted: #666666;
+      --card-shadow: 0 8px 24px rgba(128, 0, 32, 0.08);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Mobile Container Frame */
+    .app-frame {
+      width: 100%;
+      max-width: 420px;
+      height: 850px;
+      background: var(--bg);
+      border-radius: 40px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+      border: 8px solid #2A2A2A;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Top Status Bar Simulator */
+    .status-bar {
+      height: 35px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* App Header */
+    .app-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+
+    .app-header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-gold {
+      background: var(--gold);
+      color: var(--primary-dark);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    /* App Screen Content */
+    .screen-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: none;
+    }
+
+    .screen-content.active {
+      display: block;
+    }
+
+    /* Banner Home */
+    .banner-welcome {
+      background: linear-gradient(135deg, #800020, #D4AF37);
+      color: white;
+      padding: 20px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+    }
+
+    .banner-welcome h2 {
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .banner-welcome p {
+      font-size: 13px;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+
+    /* Quick Grid Menu */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .menu-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: transform 0.2s;
+    }
+
+    .menu-item:hover .icon-box {
+      transform: scale(1.08);
+    }
+
+    .menu-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+    }
+
+    /* Section Title */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Search Bar */
+    .search-box {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      border-radius: 30px;
+      border: 1px solid #DDD;
+      font-size: 14px;
+      outline: none;
+      background: white;
+    }
+
+    .search-box .icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    /* Category Chips */
+    .chips-container {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: #EFEFEF;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Word Card */
+    .word-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid #F0EAE1;
+    }
+
+    .word-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .palembang-term {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .phonetic {
+      font-size: 12px;
+      font-style: italic;
+      color: var(--text-muted);
+      margin-left: 6px;
+    }
+
+    .star-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #CCC;
+    }
+
+    .star-btn.active {
+      color: var(--gold);
+    }
+
+    .meaning {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .example-box {
+      background: var(--gold-light);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+
+    .example-palembang {
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 2px;
+    }
+
+    .example-indonesia {
+      color: #666;
+    }
+
+    /* Conversation Accordion */
+    .convo-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+    }
+
+    .convo-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .convo-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .dialogue-list {
+      margin-top: 12px;
+      display: none;
+    }
+
+    .convo-card.open .dialogue-list {
+      display: block;
+    }
+
+    .dialogue-bubble {
+      background: #F4EBE2;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .speaker-name {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    /* Quiz Card */
+    .quiz-container {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .quiz-option {
+      background: #F7F5F0;
+      border: 2px solid #E5E0D8;
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--primary);
+    }
+
+    .quiz-option.selected {
+      background: var(--gold-light);
+      border-color: var(--gold);
+    }
+
+    .quiz-option.correct {
+      background: #E8F5E9;
+      border-color: #2E7D32;
+      color: #2E7D32;
+    }
+
+    .quiz-option.wrong {
+      background: #FFEBEE;
+      border-color: #C62828;
+      color: #C62828;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      height: 65px;
+      background: var(--surface);
+      border-top: 1px solid #EEE;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .nav-item .icon {
+      font-size: 20px;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-frame">
+    <!-- Status Bar Simulator -->
+    <div class="status-bar">
+      <span>10:30</span>
+      <span>📶 🔋 100%</span>
+    </div>
+
+    <!-- Header -->
+    <div class="app-header">
+      <h1>Basa Palembang <span class="badge-gold">Android App</span></h1>
+      <span style="font-size: 20px;">🏰</span>
+    </div>
+
+    <!-- 1. HomeScreen -->
+    <div id="screen-home" class="screen-content active">
+      <div class="banner-welcome">
+        <h2>Halo, Wong Kito! 👋</h2>
+        <p>Mari belajar & lestarikan Bahasa Palembang sehari-hari dengan mudah dan seru.</p>
+      </div>
+
+      <div class="section-title">Menu Utama</div>
+      <div class="menu-grid">
+        <div class="menu-item" onclick="switchTab('dictionary')">
+          <div class="icon-box" style="background:#FFEBEE; color:#C62828;">📖</div>
+          <div class="menu-label">Kamus</div>
+        </div>
+        <div class="menu-item" onclick="switchTab('conversation')">
+          <div class="icon-box" style="background:#E3F2FD; color:#1565C0;">💬</div>
+          <div class="menu-label">Percakapan</div>
+        </div>
+        <div class="menu-item" onclick="switchTab('quiz')">
+          <div class="icon-box" style="background:#E8F5E9; color:#2E7D32;">🎯</div>
+          <div class="menu-label">Kuis Kata</div>
+        </div>
+        <div class="menu-item" onclick="switchTab('culture')">
+          <div class="icon-box" style="background:#FFF3E0; color:#EF6C00;">✨</div>
+          <div class="menu-label">Budaya</div>
+        </div>
+      </div>
+
+      <div class="section-title">💡 Kata Hari Ini</div>
+      <div class="word-card">
+        <div class="word-header">
+          <div>
+            <span class="palembang-term">Pacak</span>
+            <span class="phonetic">/pa-cak/</span>
+          </div>
+          <button class="star-btn active">★</button>
+        </div>
+        <div class="meaning">Arti: Bisa / Sanggup</div>
+        <div class="example-box">
+          <div class="example-palembang">"Aku pacak mbuat pempek lenjer sendiri."</div>
+          <div class="example-indonesia">(Saya bisa membuat pempek lenjer sendiri)</div>
+        </div>
+      </div>
+
+      <div class="section-title">⭐ Kata Favorit Anda</div>
+      <div id="favorites-list">
+        <p style="font-size: 13px; color: #888; background: white; padding: 12px; border-radius: 12px;">Klik ikon bintang ★ di Kamus untuk menyimpan kata favorit Anda di sini.</p>
+      </div>
+    </div>
+
+    <!-- 2. DictionaryScreen -->
+    <div id="screen-dictionary" class="screen-content">
+      <div class="section-title">Kamus Bahasa Palembang</div>
+      
+      <div class="search-box">
+        <span class="icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Cari kata Palembang / Indonesia..." oninput="renderDictionary()">
+      </div>
+
+      <div class="chips-container" id="categoryChips">
+        <div class="chip active" onclick="filterCategory('ALL', this)">Semua</div>
+        <div class="chip" onclick="filterCategory('SEHARI_HARI', this)">Sehari-hari</div>
+        <div class="chip" onclick="filterCategory('KATA_SIFAT', this)">Kata Sifat</div>
+        <div class="chip" onclick="filterCategory('KATA_KERJA', this)">Kata Kerja</div>
+        <div class="chip" onclick="filterCategory('KELUARGA', this)">Keluarga</div>
+      </div>
+
+      <div id="dictionaryList"></div>
+    </div>
+
+    <!-- 3. ConversationScreen -->
+    <div id="screen-conversation" class="screen-content">
+      <div class="section-title">Percakapan Sehari-hari</div>
+      <p style="font-size: 13px; color: #666; margin-bottom: 16px;">Klik pada judul percakapan untuk melihat teks dialog lengkap.</p>
+
+      <div class="convo-card" onclick="this.classList.toggle('open')">
+        <div class="convo-title">🤝 1. Menyapa Teman Lama</div>
+        <div class="convo-desc">Percakapan dua teman yang tidak sengaja bertemu di Jakabaring</div>
+        <div class="dialogue-list">
+          <div class="dialogue-bubble">
+            <div class="speaker-name">Ahmad</div>
+            <div>"Oi Agus! Apa kabar dulur? Lamo dak ketemu!"</div>
+            <div style="font-size:11px; color:#666;">(Oi Agus! Apa kabar saudara? Lama tidak bertemu!)</div>
+          </div>
+          <div class="dialogue-bubble">
+            <div class="speaker-name">Agus</div>
+            <div>"Alhamdulillah sehat Mad. Kau dari mano bae?"</div>
+            <div style="font-size:11px; color:#666;">(Alhamdulillah sehat Mad. Kamu dari mana saja?)</div>
+          </div>
+          <div class="dialogue-bubble">
+            <div class="speaker-name">Ahmad</div>
+            <div>"Agek sore laju kito ketemu di Kuto Besak!"</div>
+            <div style="font-size:11px; color:#666;">(Nanti sore ayo kita bertemu di Benteng Kuto Besak!)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="convo-card" onclick="this.classList.toggle('open')">
+        <div class="convo-title">🐟 2. Beli Pempek di Kedai</div>
+        <div class="convo-desc">Percakapan membeli pempek asli Palembang di kedai lokal</div>
+        <div class="dialogue-list">
+          <div class="dialogue-bubble">
+            <div class="speaker-name">Pembeli</div>
+            <div>"Bicik, ada pempek kapal selam dak hari ini?"</div>
+            <div style="font-size:11px; color:#666;">(Bibi, ada pempek kapal selam tidak hari ini?)</div>
+          </div>
+          <div class="dialogue-bubble">
+            <div class="speaker-name">Bicik Pempek</div>
+            <div>"Cukonyo nak yang pedas nian apo yang sedang?"</div>
+            <div style="font-size:11px; color:#666;">(Kuah cukonya mau yang pedas sekali atau yang sedang?)</div>
+          </div>
+          <div class="dialogue-bubble">
+            <div class="speaker-name">Pembeli</div>
+            <div>"Yang pedas nian bicik, biar lemak nghirupnyo!"</div>
+            <div style="font-size:11px; color:#666;">(Yang pedas sekali bibi, supaya enak menyeruputnya!)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. QuizScreen -->
+    <div id="screen-quiz" class="screen-content">
+      <div class="section-title">Kuis Bahasa Palembang</div>
+      <div class="quiz-container" id="quizBox">
+        <!-- Render Dynamic Quiz -->
+      </div>
+    </div>
+
+    <!-- 5. CultureScreen -->
+    <div id="screen-culture" class="screen-content">
+      <div class="section-title">Budaya & Ungkapan Khas</div>
+      
+      <div class="word-card" style="margin-bottom: 16px;">
+        <span class="badge-gold">Ungkapan Khas</span>
+        <h3 style="margin: 8px 0 4px 0; color: var(--primary);">Wong Kito Galo</h3>
+        <p style="font-size: 13px; color: #555; line-height: 1.5;">Slogan "Wong Kito Galo" merupakan cerminan kebersamaan dan kehangatan masyarakat Sumatera Selatan. Ciri khas bahasa Palembang sehari-hari adalah pengucapan vokal akhiran yang dominan berbunyi 'o'.</p>
+      </div>
+
+      <div class="word-card" style="margin-bottom: 16px;">
+        <span class="badge-gold">Kerajinan</span>
+        <h3 style="margin: 8px 0 4px 0; color: var(--primary);">Kain Songket Palembang</h3>
+        <p style="font-size: 13px; color: #555; line-height: 1.5;">Kain tenun mewan bertatahkan benang emas yang menjadi kebanggaan warisan Kesultanan Palembang Darussalam.</p>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="switchTab('home')">
+        <span class="icon">🏠</span>
+        <span>Beranda</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('dictionary')">
+        <span class="icon">📖</span>
+        <span>Kamus</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('conversation')">
+        <span class="icon">💬</span>
+        <span>Percakapan</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('quiz')">
+        <span class="icon">🎯</span>
+        <span>Kuis</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('culture')">
+        <span class="icon">✨</span>
+        <span>Budaya</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const dictionaryData = [
+      { id: 'w1', palembang: 'Pacak', indonesia: 'Bisa / Sanggup', phonetic: '/pa-cak/', cat: 'SEHARI_HARI', exP: 'Aku pacak mbuat pempek lenjer sendiri.', exI: 'Saya bisa membuat pempek lenjer sendiri.' },
+      { id: 'w2', palembang: 'Wong', indonesia: 'Orang', phonetic: '/wong/', cat: 'SEHARI_HARI', exP: 'Wong Kito Galo bersatu bangga.', exI: 'Orang kita semua bersatu bangga.' },
+      { id: 'w3', palembang: 'Cindo', indonesia: 'Cantik / Indah', phonetic: '/cin-do/', cat: 'KATA_SIFAT', exP: 'Baju songket itu cindo nian.', exI: 'Baju songket itu cantik sekali.' },
+      { id: 'w4', palembang: 'Katek', indonesia: 'Tidak ada', phonetic: '/ka-tek/', cat: 'SEHARI_HARI', exP: 'Katek duit lagi untuk beli es.', exI: 'Tidak ada uang lagi untuk beli es.' },
+      { id: 'w5', palembang: 'Lemak', indonesia: 'Enak / Lezat', phonetic: '/le-mak/', cat: 'KATA_SIFAT', exP: 'Cuko pempek ini lemak nian!', exI: 'Kuah cuko pempek ini enak sekali!' },
+      { id: 'w6', palembang: 'Laju', indonesia: 'Silakan / Ayo', phonetic: '/la-ju/', cat: 'KATA_KERJA', exP: 'Kalo nak melok, laju!', exI: 'Kalau ingin ikut, ayo!' },
+      { id: 'w7', palembang: 'Mangcek', indonesia: 'Paman / Bapak', phonetic: '/mang-cek/', cat: 'KELUARGA', exP: 'Mangcek, tumpangi aku ya.', exI: 'Paman, antar saya ya.' },
+      { id: 'w8', palembang: 'Bicik', indonesia: 'Bibi / Ibu', phonetic: '/bi-cik/', cat: 'KELUARGA', exP: 'Bicik jualan kemplang tunu.', exI: 'Bibi jualan kemplang bakar.' }
+    ];
+
+    let favorites = JSON.parse(localStorage.getItem('palembang_favs') || '[]');
+    let currentCategory = 'ALL';
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.screen-content').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+      document.getElementById('screen-' + tabId).classList.add('active');
+      const tabs = ['home', 'dictionary', 'conversation', 'quiz', 'culture'];
+      const index = tabs.indexOf(tabId);
+      if (index !== -1) {
+        document.querySelectorAll('.nav-item')[index].classList.add('active');
+      }
+    }
+
+    function toggleFavorite(id) {
+      if (favorites.includes(id)) {
+        favorites = favorites.filter(f => f !== id);
+      } else {
+        favorites.push(id);
+      }
+      localStorage.setItem('palembang_favs', JSON.stringify(favorites));
+      renderDictionary();
+      renderFavorites();
+    }
+
+    function filterCategory(cat, el) {
+      currentCategory = cat;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderDictionary();
+    }
+
+    function renderDictionary() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const container = document.getElementById('dictionaryList');
+      container.innerHTML = '';
+
+      const filtered = dictionaryData.filter(w => {
+        const matchCat = currentCategory === 'ALL' || w.cat === currentCategory;
+        const matchSearch = w.palembang.toLowerCase().includes(q) || w.indonesia.toLowerCase().includes(q);
+        return matchCat && matchSearch;
+      });
+
+      filtered.forEach(w => {
+        const isFav = favorites.includes(w.id);
+        container.innerHTML += `
+          <div class="word-card">
+            <div class="word-header">
+              <div>
+                <span class="palembang-term">${w.palembang}</span>
+                <span class="phonetic">${w.phonetic}</span>
+              </div>
+              <button class="star-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${w.id}')">★</button>
+            </div>
+            <div class="meaning">Arti: ${w.indonesia}</div>
+            <div class="example-box">
+              <div class="example-palembang">"${w.exP}"</div>
+              <div class="example-indonesia">(${w.exI})</div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderFavorites() {
+      const container = document.getElementById('favorites-list');
+      const favWords = dictionaryData.filter(w => favorites.includes(w.id));
+      if (favWords.length === 0) {
+        container.innerHTML = `<p style="font-size: 13px; color: #888; background: white; padding: 12px; border-radius: 12px;">Klik ikon bintang ★ di Kamus untuk menyimpan kata favorit Anda di sini.</p>`;
+        return;
+      }
+      container.innerHTML = '';
+      favWords.forEach(w => {
+        container.innerHTML += `
+          <div class="word-card">
+            <div class="word-header">
+              <div>
+                <span class="palembang-term">${w.palembang}</span>
+                <span class="phonetic">${w.phonetic}</span>
+              </div>
+              <button class="star-btn active" onclick="toggleFavorite('${w.id}')">★</button>
+            </div>
+            <div class="meaning">Arti: ${w.indonesia}</div>
+          </div>
+        `;
+      });
+    }
+
+    // Quiz Logic
+    const quizQuestions = [
+      { q: "Apa arti kata 'Pacak' dalam bahasa Palembang?", options: ["Tidak bisa", "Bisa / Sanggup", "Tidur", "Pergi"], correct: 1 },
+      { q: "Kata 'Lemak' dalam kalimat 'Cuko pempek ini lemak nian' berarti...", options: ["Pedas", "Manis", "Enak / Lezat", "Asin"], correct: 2 },
+      { q: "Sapaan ramah untuk paman di Palembang adalah...", options: ["Bicik", "Mangcek", "Budak", "Dulur"], correct: 1 }
+    ];
+    let qIndex = 0;
+    let quizScore = 0;
+
+    function renderQuiz() {
+      const box = document.getElementById('quizBox');
+      if (qIndex >= quizQuestions.length) {
+        box.innerHTML = `
+          <div style="text-align:center; padding:20px;">
+            <div style="font-size:48px;">🎉</div>
+            <h2 style="margin:12px 0; color:var(--primary);">Kuis Selesai!</h2>
+            <p style="font-size:16px; font-weight:700;">Skor Anda: ${quizScore} / ${quizQuestions.length * 20}</p>
+            <button class="btn-primary" onclick="qIndex=0;quizScore=0;renderQuiz();">Coba Lagi</button>
+          </div>
+        `;
+        return;
+      }
+
+      const current = quizQuestions[qIndex];
+      let html = `<h4 style="margin-bottom:16px;">Soal ${qIndex+1} dari ${quizQuestions.length}:<br><span style="font-size:16px; color:var(--primary);">${current.q}</span></h4>`;
+      current.options.forEach((opt, idx) => {
+        html += `<div class="quiz-option" onclick="answerQuiz(${idx}, this)">${opt}</div>`;
+      });
+      box.innerHTML = html;
+    }
+
+    function answerQuiz(idx, el) {
+      const current = quizQuestions[qIndex];
+      const options = document.querySelectorAll('.quiz-option');
+      options.forEach(o => o.style.pointerEvents = 'none');
+
+      if (idx === current.correct) {
+        el.classList.add('correct');
+        quizScore += 20;
+      } else {
+        el.classList.add('wrong');
+        options[current.correct].classList.add('correct');
+      }
+
+      setTimeout(() => {
+        qIndex++;
+        renderQuiz();
+      }, 1400);
+    }
+
+    // Init
+    renderDictionary();
+    renderFavorites();
+    renderQuiz();
+  </script>
+</body>
+</html>
 
