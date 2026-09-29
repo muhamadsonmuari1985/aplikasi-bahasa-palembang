@@ -3,633 +3,3971 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aplikasi Bahasa Palembang - Preview Interaktif</title>
+  <title>Aplikasi Bahasa Palembang - Android Jetpack Compose Preview</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #800020;
-      --primary-dark: #500014;
-      --gold: #D4AF37;
-      --gold-light: #FFF3CD;
-      --bg: #F9F6F0;
-      --surface: #FFFFFF;
-      --text: #1C1B1F;
-      --text-muted: #666666;
-      --card-shadow: 0 8px 24px rgba(128, 0, 32, 0.08);
-      --radius: 16px;
+      /* Android Jetpack Compose Theme (Songket & Slate) */
+      --md-sys-color-primary: #800020;
+      --md-sys-color-primary-dark: #500014;
+      --md-sys-color-primary-light: #A52A2A;
+      --md-sys-color-primary-container: #FFF3CD;
+      --md-sys-color-on-primary-container: #500014;
+      --md-sys-color-secondary: #A67C00;
+      --md-sys-color-gold: #D4AF37;
+      --md-sys-color-background: #F9F6F0;
+      --md-sys-color-surface: #FFFFFF;
+      --md-sys-color-surface-variant: #F2EFE9;
+      --md-sys-color-on-surface-variant: #49454F;
+      --md-sys-color-on-background: #1C1B1F;
+      --md-sys-color-success: #2E7D32;
+      --md-sys-color-error: #C62828;
+      --md-sys-color-card-border: #E8E2D9;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-pill: 24px;
+      --elevation-1: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --elevation-2: 0 4px 12px rgba(128, 0, 32, 0.08);
+      --elevation-3: 0 8px 24px rgba(0,0,0,0.12);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Roboto', sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: #121212;
-      color: var(--text);
+      background-color: #121316;
+      color: var(--md-sys-color-on-background);
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 16px 8px;
+      overflow-x: hidden;
     }
 
-    /* Mobile Container Frame */
-    .app-frame {
+    /* Top Control Bar */
+    .top-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 440px;
+      margin-bottom: 12px;
+      padding: 6px 12px;
+      background: #1E1F23;
+      border: 1px solid #33363D;
+      border-radius: 14px;
+      color: #FFF;
+      font-size: 13px;
+    }
+
+    .top-controls .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      color: var(--md-sys-color-gold);
+    }
+
+    .view-toggle-btn {
+      background: #2D2F36;
+      color: #DDD;
+      border: 1px solid #444;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .view-toggle-btn:hover {
+      background: var(--md-sys-color-primary);
+      color: #FFF;
+      border-color: var(--md-sys-color-primary);
+    }
+
+    /* Device Container */
+    .device-wrapper {
       width: 100%;
       max-width: 420px;
-      height: 850px;
-      background: var(--bg);
-      border-radius: 40px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-      border: 8px solid #2A2A2A;
+      height: 870px;
+      background: var(--md-sys-color-background);
+      border-radius: 44px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 0 10px #24252A;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       position: relative;
+      transition: max-width 0.3s cubic-bezier(0.2, 0, 0, 1), height 0.3s;
     }
 
-    /* Top Status Bar Simulator */
-    .status-bar {
-      height: 35px;
-      background: var(--primary);
-      color: white;
+    .device-wrapper.full-mode {
+      max-width: 760px;
+      height: 92vh;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    /* Android Status Bar */
+    .android-status-bar {
+      height: 40px;
+      background: transparent;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 20px;
-      font-size: 12px;
+      padding: 0 24px;
+      font-size: 13px;
       font-weight: 600;
+      color: #1C1B1F;
+      z-index: 10;
+      user-select: none;
     }
 
-    /* App Header */
-    .app-header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      padding: 16px 20px;
+    .notch-camera {
+      width: 12px;
+      height: 12px;
+      background: #000;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      top: 14px;
+      transform: translateX(-50%);
+    }
+
+    .status-icons {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
+      gap: 6px;
+      font-size: 12px;
     }
 
-    .app-header h1 {
-      font-size: 18px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .badge-gold {
-      background: var(--gold);
-      color: var(--primary-dark);
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    /* App Screen Content */
-    .screen-content {
+    /* Screen Viewport */
+    .screen-viewport {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
-      display: none;
+      overflow-x: hidden;
+      padding: 0 16px 20px 16px;
+      scroll-behavior: smooth;
     }
 
+    .screen-viewport::-webkit-scrollbar {
+      width: 4px;
+    }
+    .screen-viewport::-webkit-scrollbar-thumb {
+      background: #D9D2C7;
+      border-radius: 4px;
+    }
+
+    .screen-content {
+      display: none;
+      animation: fadeIn 0.2s ease-in-out;
+    }
     .screen-content.active {
       display: block;
     }
 
-    /* Banner Home */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Common Android / Compose Typography */
+    .headline-medium {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--md-sys-color-on-background);
+      letter-spacing: -0.3px;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    .body-medium-gray {
+      font-size: 13px;
+      color: #6B6862;
+      line-height: 1.4;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--md-sys-color-on-background);
+      margin: 20px 0 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* HOME SCREEN: Gradient Banner */
     .banner-welcome {
-      background: linear-gradient(135deg, #800020, #D4AF37);
-      color: white;
-      padding: 20px;
-      border-radius: var(--radius);
-      margin-bottom: 20px;
+      background: linear-gradient(100deg, #800020 0%, #B84A1C 55%, #D4AF37 100%);
+      border-radius: 20px;
+      padding: 20px 18px;
+      color: #FFFFFF;
+      margin-top: 6px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 20px rgba(128, 0, 32, 0.25);
     }
 
     .banner-welcome h2 {
       font-size: 20px;
+      font-weight: 800;
       margin-bottom: 6px;
+      letter-spacing: -0.2px;
     }
 
     .banner-welcome p {
       font-size: 13px;
-      opacity: 0.9;
-      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.45;
     }
 
-    /* Quick Grid Menu */
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 24px;
+    /* Quick Menu Row */
+    .quick-menu-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 18px;
     }
 
-    .menu-item {
+    .quick-menu-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
       cursor: pointer;
+      flex: 1;
       text-decoration: none;
+      transition: transform 0.15s ease;
     }
 
-    .icon-box {
-      width: 56px;
-      height: 56px;
+    .quick-menu-item:active {
+      transform: scale(0.94);
+    }
+
+    .quick-icon-box {
+      width: 60px;
+      height: 60px;
       border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      transition: transform 0.2s;
+      margin-bottom: 6px;
+      transition: box-shadow 0.2s;
     }
 
-    .menu-item:hover .icon-box {
-      transform: scale(1.08);
+    .quick-menu-item:hover .quick-icon-box {
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
     }
 
-    .menu-label {
-      font-size: 11px;
+    .quick-menu-label {
+      font-size: 12px;
       font-weight: 600;
-      color: var(--text);
+      color: #333;
       text-align: center;
     }
 
-    /* Section Title */
-    .section-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* Search Bar */
-    .search-box {
-      position: relative;
-      margin-bottom: 16px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 12px 16px 12px 42px;
-      border-radius: 30px;
-      border: 1px solid #DDD;
-      font-size: 14px;
-      outline: none;
-      background: white;
-    }
-
-    .search-box .icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 16px;
-      color: var(--text-muted);
-    }
-
-    /* Category Chips */
-    .chips-container {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 16px;
-    }
-
-    .chip {
-      padding: 6px 14px;
-      border-radius: 20px;
-      background: #EFEFEF;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .chip.active {
-      background: var(--primary);
-      color: white;
-    }
-
-    /* Word Card */
+    /* WORD CARD (Android WordCard component) */
     .word-card {
-      background: var(--surface);
-      border-radius: var(--radius);
+      background: var(--md-sys-color-surface-variant);
+      border-radius: var(--radius-lg);
       padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: var(--card-shadow);
-      border: 1px solid #F0EAE1;
+      margin-bottom: 10px;
+      box-shadow: var(--elevation-1);
+      border: 1px solid var(--md-sys-color-card-border);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .word-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+    }
+
+    .word-header-left {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .palembang-term {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 800;
-      color: var(--primary);
+      color: var(--md-sys-color-primary);
+      letter-spacing: -0.2px;
     }
 
     .phonetic {
-      font-size: 12px;
+      font-size: 13px;
       font-style: italic;
-      color: var(--text-muted);
-      margin-left: 6px;
+      color: #777;
     }
 
-    .star-btn {
+    .bookmark-btn {
       background: none;
       border: none;
-      font-size: 18px;
+      padding: 4px;
       cursor: pointer;
-      color: #CCC;
+      color: #8E8A83;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: color 0.2s, background 0.2s;
     }
 
-    .star-btn.active {
-      color: var(--gold);
+    .bookmark-btn:hover {
+      background: rgba(128, 0, 32, 0.08);
     }
 
-    .meaning {
-      font-size: 14px;
+    .bookmark-btn.active {
+      color: var(--md-sys-color-primary);
+    }
+
+    .meaning-text {
+      font-size: 15px;
       font-weight: 600;
-      margin-bottom: 10px;
+      color: #1F1F1F;
+      margin-bottom: 8px;
     }
 
-    .example-box {
-      background: var(--gold-light);
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-size: 12px;
+    .example-container {
+      background: rgba(255, 243, 205, 0.45);
+      border-left: 3px solid var(--md-sys-color-gold);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      margin-bottom: 8px;
     }
 
     .example-palembang {
-      font-weight: 700;
-      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 600;
+      color: #2D281E;
       margin-bottom: 2px;
     }
 
     .example-indonesia {
-      color: #666;
+      font-size: 12px;
+      color: #6C665A;
     }
 
-    /* Conversation Accordion */
-    .convo-card {
-      background: var(--surface);
-      border-radius: var(--radius);
+    /* SuggestionChip (Android Material 3) */
+    .suggestion-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      background: #E8E2D6;
+      color: #49454F;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      text-transform: capitalize;
+    }
+
+    /* Empty state card */
+    .empty-fav-card {
+      background: var(--md-sys-color-surface-variant);
+      border-radius: var(--radius-lg);
       padding: 16px;
+      border: 1px dashed #CCC4B8;
+      color: #7A756D;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* DICTIONARY SCREEN */
+    .search-bar-container {
+      position: relative;
       margin-bottom: 12px;
-      box-shadow: var(--card-shadow);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 38px 12px 42px;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid #DDD6CB;
+      font-size: 14px;
+      outline: none;
+      background: var(--md-sys-color-surface);
+      color: #1C1B1F;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--md-sys-color-primary);
+      box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.12);
+    }
+
+    .search-icon-left {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #7A756D;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .search-clear-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #E0DAD0;
+      border: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 11px;
+      color: #555;
+      display: none;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
     }
 
-    .convo-title {
-      font-weight: 700;
-      font-size: 15px;
+    /* Category Filter Chips LazyRow */
+    .category-chips-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+      scrollbar-width: none;
     }
-
-    .convo-desc {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .dialogue-list {
-      margin-top: 12px;
+    .category-chips-row::-webkit-scrollbar {
       display: none;
     }
 
-    .convo-card.open .dialogue-list {
-      display: block;
+    .filter-chip {
+      padding: 6px 14px;
+      border-radius: 12px;
+      background: #ECE6DC;
+      font-size: 12px;
+      font-weight: 600;
+      color: #49454F;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .filter-chip:hover {
+      background: #E1DACF;
+    }
+
+    .filter-chip.active {
+      background: var(--md-sys-color-primary);
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(128, 0, 32, 0.25);
+    }
+
+    .result-count-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--md-sys-color-primary);
+      margin-bottom: 8px;
+    }
+
+    /* CONVERSATION SCREEN */
+    .conversation-card {
+      background: var(--md-sys-color-surface-variant);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--elevation-1);
+      border: 1px solid var(--md-sys-color-card-border);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .conversation-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .conversation-info {
+      flex: 1;
+    }
+
+    .conversation-category {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #E4DED4;
+      font-size: 11px;
+      font-weight: 700;
+      color: #4A463F;
+      margin-bottom: 4px;
+    }
+
+    .conversation-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1C1B1F;
+    }
+
+    .conversation-desc {
+      font-size: 12px;
+      color: #6C665C;
+      margin-top: 2px;
+    }
+
+    .conversation-chevron {
+      color: #777;
+      transition: transform 0.25s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .conversation-card.expanded .conversation-chevron {
+      transform: rotate(180deg);
+      color: var(--md-sys-color-primary);
+    }
+
+    .dialogues-wrapper {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease-out, margin-top 0.25s;
+    }
+
+    .conversation-card.expanded .dialogues-wrapper {
+      max-height: 1200px;
+      margin-top: 14px;
+      border-top: 1px solid #E2DCD2;
+      padding-top: 12px;
     }
 
     .dialogue-bubble {
-      background: #F4EBE2;
+      border-radius: var(--radius-md);
+      background: rgba(255, 243, 205, 0.35);
+      border-left: 3px solid var(--md-sys-color-primary);
       padding: 10px 12px;
-      border-radius: 10px;
       margin-bottom: 8px;
     }
 
     .speaker-name {
       font-size: 11px;
       font-weight: 800;
-      color: var(--primary);
+      color: var(--md-sys-color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 2px;
     }
 
-    /* Quiz Card */
-    .quiz-container {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--card-shadow);
-    }
-
-    .quiz-option {
-      background: #F7F5F0;
-      border: 2px solid #E5E0D8;
-      padding: 14px;
-      border-radius: 12px;
-      margin-bottom: 10px;
+    .palembang-text {
       font-size: 14px;
+      font-weight: 700;
+      color: #201A1B;
+      margin-bottom: 2px;
+    }
+
+    .indonesia-text {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* QUIZ SCREEN */
+    .quiz-progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #E0D9CE;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      background: var(--md-sys-color-primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .quiz-question-number {
+      font-size: 12px;
       font-weight: 600;
+      color: #6E685F;
+      margin-bottom: 12px;
+    }
+
+    .quiz-question-card {
+      background: var(--md-sys-color-surface-variant);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--elevation-1);
+      border: 1px solid var(--md-sys-color-card-border);
+      font-size: 17px;
+      font-weight: 700;
+      color: #1A1A1A;
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    .quiz-option-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--md-sys-color-surface);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      border: 1.5px solid #DDD6CB;
       cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    .quiz-option-card:hover {
+      border-color: var(--md-sys-color-primary);
+      background: #FAF7F2;
+    }
+
+    .quiz-option-card.selected {
+      background: var(--md-sys-color-primary-container);
+      border-color: var(--md-sys-color-gold);
+      font-weight: 700;
+    }
+
+    .quiz-option-card.correct-answer {
+      background: rgba(46, 125, 50, 0.15) !important;
+      border-color: var(--md-sys-color-success) !important;
+      color: var(--md-sys-color-success);
+      font-weight: 700;
+    }
+
+    .quiz-option-card.wrong-answer {
+      background: rgba(198, 40, 40, 0.15) !important;
+      border-color: var(--md-sys-color-error) !important;
+      color: var(--md-sys-color-error);
+      font-weight: 700;
+    }
+
+    .quiz-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .quiz-option-card.selected .quiz-radio {
+      border-color: var(--md-sys-color-primary);
+    }
+
+    .quiz-radio-inner {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--md-sys-color-primary);
+      display: none;
+    }
+
+    .quiz-option-card.selected .quiz-radio-inner {
+      display: block;
+    }
+
+    .quiz-explanation-box {
+      background: rgba(255, 243, 205, 0.55);
+      border: 1px solid var(--md-sys-color-gold);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #3B331A;
+      margin: 12px 0;
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .btn-compose {
+      width: 100%;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: var(--md-sys-color-primary);
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 14px;
+      box-shadow: 0 4px 10px rgba(128, 0, 32, 0.2);
       transition: all 0.2s;
     }
 
-    .quiz-option:hover {
-      border-color: var(--primary);
+    .btn-compose:disabled {
+      background: #D4CDC3;
+      color: #8C857B;
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
-    .quiz-option.selected {
-      background: var(--gold-light);
-      border-color: var(--gold);
+    /* Quiz Finish Screen */
+    .quiz-finish-card {
+      background: var(--md-sys-color-surface-variant);
+      border-radius: 24px;
+      padding: 28px 20px;
+      text-align: center;
+      margin-top: 24px;
+      box-shadow: var(--elevation-2);
+      border: 1px solid var(--md-sys-color-card-border);
     }
 
-    .quiz-option.correct {
-      background: #E8F5E9;
-      border-color: #2E7D32;
-      color: #2E7D32;
+    .quiz-finish-score {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--md-sys-color-primary);
+      margin: 10px 0;
     }
 
-    .quiz-option.wrong {
-      background: #FFEBEE;
-      border-color: #C62828;
-      color: #C62828;
+    /* CULTURE SCREEN */
+    .culture-card {
+      background: var(--md-sys-color-surface-variant);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 12px;
+      box-shadow: var(--elevation-1);
+      border: 1px solid var(--md-sys-color-card-border);
     }
 
-    .btn-primary {
-      width: 100%;
-      padding: 14px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 15px;
+    .culture-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      background: #E8E1D5;
+      font-size: 11px;
       font-weight: 700;
-      cursor: pointer;
-      margin-top: 16px;
+      color: #3E3B35;
+      margin-bottom: 8px;
     }
 
-    /* Bottom Navigation Bar */
-    .bottom-nav {
-      height: 65px;
-      background: var(--surface);
-      border-top: 1px solid #EEE;
+    .culture-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1C1B1F;
+      margin-bottom: 2px;
+    }
+
+    .culture-subtitle {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--md-sys-color-primary);
+      margin-bottom: 10px;
+    }
+
+    .culture-content {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #383530;
+    }
+
+    /* Android Material 3 Navigation Bar */
+    .android-nav-bar {
+      height: 76px;
+      background: #FFFFFF;
+      border-top: 1px solid #ECE7DE;
       display: flex;
       justify-content: space-around;
       align-items: center;
+      padding: 4px 6px 12px 6px;
+      z-index: 10;
     }
 
     .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      color: var(--text-muted);
+      gap: 2px;
+      color: #55524B;
       cursor: pointer;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
+      flex: 1;
+      padding: 4px 0;
+      text-decoration: none;
+      transition: color 0.15s;
     }
 
-    .nav-item .icon {
-      font-size: 20px;
+    .nav-icon-pill {
+      width: 56px;
+      height: 30px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
     }
 
     .nav-item.active {
-      color: var(--primary);
+      color: var(--md-sys-color-primary);
+      font-weight: 800;
+    }
+
+    .nav-item.active .nav-icon-pill {
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-primary);
+    }
+
+    .nav-icon-svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    /* Android Navigation Gesture Bar */
+    .android-gesture-bar {
+      height: 18px;
+      background: #FFFFFF;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 4px;
+    }
+
+    .gesture-pill {
+      width: 90px;
+      height: 4px;
+      background: #88847C;
+      border-radius: 2px;
     }
   </style>
 </head>
 <body>
 
-  <div class="app-frame">
-    <!-- Status Bar Simulator -->
-    <div class="status-bar">
-      <span>10:30</span>
-      <span>📶 🔋 100%</span>
+  <!-- Top Controls -->
+  <div class="top-controls">
+    <div class="badge">
+      <span>ðŸ°</span> Aplikasi Bahasa Palembang
     </div>
-
-    <!-- Header -->
-    <div class="app-header">
-      <h1>Basa Palembang <span class="badge-gold">Android App</span></h1>
-      <span style="font-size: 20px;">🏰</span>
-    </div>
-
-    <!-- 1. HomeScreen -->
-    <div id="screen-home" class="screen-content active">
-      <div class="banner-welcome">
-        <h2>Halo, Wong Kito! 👋</h2>
-        <p>Mari belajar & lestarikan Bahasa Palembang sehari-hari dengan mudah dan seru.</p>
-      </div>
-
-      <div class="section-title">Menu Utama</div>
-      <div class="menu-grid">
-        <div class="menu-item" onclick="switchTab('dictionary')">
-          <div class="icon-box" style="background:#FFEBEE; color:#C62828;">📖</div>
-          <div class="menu-label">Kamus</div>
-        </div>
-        <div class="menu-item" onclick="switchTab('conversation')">
-          <div class="icon-box" style="background:#E3F2FD; color:#1565C0;">💬</div>
-          <div class="menu-label">Percakapan</div>
-        </div>
-        <div class="menu-item" onclick="switchTab('quiz')">
-          <div class="icon-box" style="background:#E8F5E9; color:#2E7D32;">🎯</div>
-          <div class="menu-label">Kuis Kata</div>
-        </div>
-        <div class="menu-item" onclick="switchTab('culture')">
-          <div class="icon-box" style="background:#FFF3E0; color:#EF6C00;">✨</div>
-          <div class="menu-label">Budaya</div>
-        </div>
-      </div>
-
-      <div class="section-title">💡 Kata Hari Ini</div>
-      <div class="word-card">
-        <div class="word-header">
-          <div>
-            <span class="palembang-term">Pacak</span>
-            <span class="phonetic">/pa-cak/</span>
-          </div>
-          <button class="star-btn active">★</button>
-        </div>
-        <div class="meaning">Arti: Bisa / Sanggup</div>
-        <div class="example-box">
-          <div class="example-palembang">"Aku pacak mbuat pempek lenjer sendiri."</div>
-          <div class="example-indonesia">(Saya bisa membuat pempek lenjer sendiri)</div>
-        </div>
-      </div>
-
-      <div class="section-title">⭐ Kata Favorit Anda</div>
-      <div id="favorites-list">
-        <p style="font-size: 13px; color: #888; background: white; padding: 12px; border-radius: 12px;">Klik ikon bintang ★ di Kamus untuk menyimpan kata favorit Anda di sini.</p>
-      </div>
-    </div>
-
-    <!-- 2. DictionaryScreen -->
-    <div id="screen-dictionary" class="screen-content">
-      <div class="section-title">Kamus Bahasa Palembang</div>
-      
-      <div class="search-box">
-        <span class="icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Cari kata Palembang / Indonesia..." oninput="renderDictionary()">
-      </div>
-
-      <div class="chips-container" id="categoryChips">
-        <div class="chip active" onclick="filterCategory('ALL', this)">Semua</div>
-        <div class="chip" onclick="filterCategory('SEHARI_HARI', this)">Sehari-hari</div>
-        <div class="chip" onclick="filterCategory('KATA_SIFAT', this)">Kata Sifat</div>
-        <div class="chip" onclick="filterCategory('KATA_KERJA', this)">Kata Kerja</div>
-        <div class="chip" onclick="filterCategory('KELUARGA', this)">Keluarga</div>
-      </div>
-
-      <div id="dictionaryList"></div>
-    </div>
-
-    <!-- 3. ConversationScreen -->
-    <div id="screen-conversation" class="screen-content">
-      <div class="section-title">Percakapan Sehari-hari</div>
-      <p style="font-size: 13px; color: #666; margin-bottom: 16px;">Klik pada judul percakapan untuk melihat teks dialog lengkap.</p>
-
-      <div class="convo-card" onclick="this.classList.toggle('open')">
-        <div class="convo-title">🤝 1. Menyapa Teman Lama</div>
-        <div class="convo-desc">Percakapan dua teman yang tidak sengaja bertemu di Jakabaring</div>
-        <div class="dialogue-list">
-          <div class="dialogue-bubble">
-            <div class="speaker-name">Ahmad</div>
-            <div>"Oi Agus! Apa kabar dulur? Lamo dak ketemu!"</div>
-            <div style="font-size:11px; color:#666;">(Oi Agus! Apa kabar saudara? Lama tidak bertemu!)</div>
-          </div>
-          <div class="dialogue-bubble">
-            <div class="speaker-name">Agus</div>
-            <div>"Alhamdulillah sehat Mad. Kau dari mano bae?"</div>
-            <div style="font-size:11px; color:#666;">(Alhamdulillah sehat Mad. Kamu dari mana saja?)</div>
-          </div>
-          <div class="dialogue-bubble">
-            <div class="speaker-name">Ahmad</div>
-            <div>"Agek sore laju kito ketemu di Kuto Besak!"</div>
-            <div style="font-size:11px; color:#666;">(Nanti sore ayo kita bertemu di Benteng Kuto Besak!)</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="convo-card" onclick="this.classList.toggle('open')">
-        <div class="convo-title">🐟 2. Beli Pempek di Kedai</div>
-        <div class="convo-desc">Percakapan membeli pempek asli Palembang di kedai lokal</div>
-        <div class="dialogue-list">
-          <div class="dialogue-bubble">
-            <div class="speaker-name">Pembeli</div>
-            <div>"Bicik, ada pempek kapal selam dak hari ini?"</div>
-            <div style="font-size:11px; color:#666;">(Bibi, ada pempek kapal selam tidak hari ini?)</div>
-          </div>
-          <div class="dialogue-bubble">
-            <div class="speaker-name">Bicik Pempek</div>
-            <div>"Cukonyo nak yang pedas nian apo yang sedang?"</div>
-            <div style="font-size:11px; color:#666;">(Kuah cukonya mau yang pedas sekali atau yang sedang?)</div>
-          </div>
-          <div class="dialogue-bubble">
-            <div class="speaker-name">Pembeli</div>
-            <div>"Yang pedas nian bicik, biar lemak nghirupnyo!"</div>
-            <div style="font-size:11px; color:#666;">(Yang pedas sekali bibi, supaya enak menyeruputnya!)</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. QuizScreen -->
-    <div id="screen-quiz" class="screen-content">
-      <div class="section-title">Kuis Bahasa Palembang</div>
-      <div class="quiz-container" id="quizBox">
-        <!-- Render Dynamic Quiz -->
-      </div>
-    </div>
-
-    <!-- 5. CultureScreen -->
-    <div id="screen-culture" class="screen-content">
-      <div class="section-title">Budaya & Ungkapan Khas</div>
-      
-      <div class="word-card" style="margin-bottom: 16px;">
-        <span class="badge-gold">Ungkapan Khas</span>
-        <h3 style="margin: 8px 0 4px 0; color: var(--primary);">Wong Kito Galo</h3>
-        <p style="font-size: 13px; color: #555; line-height: 1.5;">Slogan "Wong Kito Galo" merupakan cerminan kebersamaan dan kehangatan masyarakat Sumatera Selatan. Ciri khas bahasa Palembang sehari-hari adalah pengucapan vokal akhiran yang dominan berbunyi 'o'.</p>
-      </div>
-
-      <div class="word-card" style="margin-bottom: 16px;">
-        <span class="badge-gold">Kerajinan</span>
-        <h3 style="margin: 8px 0 4px 0; color: var(--primary);">Kain Songket Palembang</h3>
-        <p style="font-size: 13px; color: #555; line-height: 1.5;">Kain tenun mewan bertatahkan benang emas yang menjadi kebanggaan warisan Kesultanan Palembang Darussalam.</p>
-      </div>
-    </div>
-
-    <!-- Bottom Navigation Bar -->
-    <div class="bottom-nav">
-      <div class="nav-item active" onclick="switchTab('home')">
-        <span class="icon">🏠</span>
-        <span>Beranda</span>
-      </div>
-      <div class="nav-item" onclick="switchTab('dictionary')">
-        <span class="icon">📖</span>
-        <span>Kamus</span>
-      </div>
-      <div class="nav-item" onclick="switchTab('conversation')">
-        <span class="icon">💬</span>
-        <span>Percakapan</span>
-      </div>
-      <div class="nav-item" onclick="switchTab('quiz')">
-        <span class="icon">🎯</span>
-        <span>Kuis</span>
-      </div>
-      <div class="nav-item" onclick="switchTab('culture')">
-        <span class="icon">✨</span>
-        <span>Budaya</span>
-      </div>
+    <div>
+      <button class="view-toggle-btn" id="viewToggleBtn" onclick="toggleViewMode()">ðŸ“± Mode HP</button>
     </div>
   </div>
 
-  <script>
-    const dictionaryData = [
-      { id: 'w1', palembang: 'Pacak', indonesia: 'Bisa / Sanggup', phonetic: '/pa-cak/', cat: 'SEHARI_HARI', exP: 'Aku pacak mbuat pempek lenjer sendiri.', exI: 'Saya bisa membuat pempek lenjer sendiri.' },
-      { id: 'w2', palembang: 'Wong', indonesia: 'Orang', phonetic: '/wong/', cat: 'SEHARI_HARI', exP: 'Wong Kito Galo bersatu bangga.', exI: 'Orang kita semua bersatu bangga.' },
-      { id: 'w3', palembang: 'Cindo', indonesia: 'Cantik / Indah', phonetic: '/cin-do/', cat: 'KATA_SIFAT', exP: 'Baju songket itu cindo nian.', exI: 'Baju songket itu cantik sekali.' },
-      { id: 'w4', palembang: 'Katek', indonesia: 'Tidak ada', phonetic: '/ka-tek/', cat: 'SEHARI_HARI', exP: 'Katek duit lagi untuk beli es.', exI: 'Tidak ada uang lagi untuk beli es.' },
-      { id: 'w5', palembang: 'Lemak', indonesia: 'Enak / Lezat', phonetic: '/le-mak/', cat: 'KATA_SIFAT', exP: 'Cuko pempek ini lemak nian!', exI: 'Kuah cuko pempek ini enak sekali!' },
-      { id: 'w6', palembang: 'Laju', indonesia: 'Silakan / Ayo', phonetic: '/la-ju/', cat: 'KATA_KERJA', exP: 'Kalo nak melok, laju!', exI: 'Kalau ingin ikut, ayo!' },
-      { id: 'w7', palembang: 'Mangcek', indonesia: 'Paman / Bapak', phonetic: '/mang-cek/', cat: 'KELUARGA', exP: 'Mangcek, tumpangi aku ya.', exI: 'Paman, antar saya ya.' },
-      { id: 'w8', palembang: 'Bicik', indonesia: 'Bibi / Ibu', phonetic: '/bi-cik/', cat: 'KELUARGA', exP: 'Bicik jualan kemplang tunu.', exI: 'Bibi jualan kemplang bakar.' }
-    ];
+  <!-- Android Phone Mockup Frame -->
+  <div class="device-wrapper" id="deviceFrame">
+    
+    <!-- Android Status Bar Simulator -->
+    <div class="android-status-bar">
+      <span id="liveClock">10:30</span>
+      <div class="notch-camera"></div>
+      <div class="status-icons">
+        <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M12 3C7.03 3 2.8 5.7 0 9.7L12 22 24 9.7C21.2 5.7 16.97 3 12 3z"/></svg>
+        <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M2 22h20V2z"/></svg>
+        <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.34V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        <span>100%</span>
+      </div>
+    </div>
 
+    <!-- Screen Viewport -->
+    <div class="screen-viewport">
+
+      <!-- 1. HomeScreen (Beranda) -->
+      <div id="screen-home" class="screen-content active">
+        <!-- Banner Selamat Datang -->
+        <div class="banner-welcome">
+          <h2>Halo, Wong Kito Galo! ðŸ‘‹</h2>
+          <p>Mari belajar & lestarikan Bahasa Palembang bersama-sama.</p>
+        </div>
+
+        <!-- Menu Utama -->
+        <div class="section-title">Menu Utama</div>
+        <div class="quick-menu-row">
+          <div class="quick-menu-item" onclick="switchTab('dictionary')">
+            <div class="quick-icon-box" style="background: rgba(229, 115, 115, 0.22); color: #E57373;">
+              <svg class="nav-icon-svg" style="width:28px;height:28px;" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+            </div>
+            <span class="quick-menu-label">Kamus</span>
+          </div>
+
+          <div class="quick-menu-item" onclick="switchTab('conversation')">
+            <div class="quick-icon-box" style="background: rgba(100, 181, 246, 0.22); color: #1976D2;">
+              <svg class="nav-icon-svg" style="width:28px;height:28px;" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+            </div>
+            <span class="quick-menu-label">Obrolan</span>
+          </div>
+
+          <div class="quick-menu-item" onclick="switchTab('quiz')">
+            <div class="quick-icon-box" style="background: rgba(129, 199, 132, 0.25); color: #2E7D32;">
+              <svg class="nav-icon-svg" style="width:28px;height:28px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+            </div>
+            <span class="quick-menu-label">Kuis Kata</span>
+          </div>
+
+          <div class="quick-menu-item" onclick="switchTab('culture')">
+            <div class="quick-icon-box" style="background: rgba(255, 183, 77, 0.25); color: #E65100;">
+              <svg class="nav-icon-svg" style="width:28px;height:28px;" viewBox="0 0 24 24"><path d="M12 10.9c-.61 0-1.1.49-1.1 1.1s.49 1.1 1.1 1.1c.61 0 1.1-.49 1.1-1.1s-.49-1.1-1.1-1.1zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.19 12.19L6 18l3.81-8.19L18 6l-3.81 8.19z"/></svg>
+            </div>
+            <span class="quick-menu-label">Budaya</span>
+          </div>
+        </div>
+
+        <!-- Kata Hari Ini -->
+        <div class="section-title">ðŸ’¡ Kata Hari Ini</div>
+        <div id="wordOfDayContainer"></div>
+
+        <!-- Kata Favorit Anda -->
+        <div class="section-title">â­ Kata Favorit Anda</div>
+        <div id="favoritesListContainer"></div>
+      </div>
+
+      <!-- 2. DictionaryScreen (Kamus) -->
+      <div id="screen-dictionary" class="screen-content">
+        <h1 class="headline-medium">Kamus Bahasa Palembang</h1>
+        
+        <!-- AppSearchBar -->
+        <div class="search-bar-container">
+          <span class="search-icon-left">
+            <svg style="width:20px;height:20px;fill:currentColor;" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          </span>
+          <input type="text" id="dictSearchInput" class="search-input" placeholder="Cari kata Palembang / Indonesia..." oninput="handleSearchInput(this.value)">
+          <button id="searchClearBtn" class="search-clear-btn" onclick="clearSearch()">âœ•</button>
+        </div>
+
+        <!-- Category Chips LazyRow -->
+        <div class="category-chips-row" id="categoryChipsRow">
+          <!-- Injected dynamically -->
+        </div>
+
+        <div class="result-count-label" id="resultCountLabel">Menampilkan 0 Kata</div>
+
+        <!-- Words List -->
+        <div id="dictionaryWordsList"></div>
+      </div>
+
+      <!-- 3. ConversationScreen (Obrolan) -->
+      <div id="screen-conversation" class="screen-content">
+        <h1 class="headline-medium">Percakapan Sehari-hari</h1>
+        <p class="body-medium-gray">Pelajari frasa dan percakapan populer Wong Palembang</p>
+
+        <div id="conversationsContainer"></div>
+      </div>
+
+      <!-- 4. QuizScreen (Kuis) -->
+      <div id="screen-quiz" class="screen-content">
+        <h1 class="headline-medium" style="text-align:center;">Kuis Bahasa Palembang</h1>
+        <p class="body-medium-gray" style="text-align:center;">Uji pemahaman kosakata dan ungkapan Palembang</p>
+
+        <div id="quizActiveContainer">
+          <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill" id="quizProgressFill"></div>
+          </div>
+          <div class="quiz-question-number" id="quizQuestionNumber">Pertanyaan 1 dari 25</div>
+
+          <!-- Question Card -->
+          <div class="quiz-question-card" id="quizQuestionText"></div>
+
+          <!-- Options -->
+          <div id="quizOptionsContainer"></div>
+
+          <!-- Explanation box -->
+          <div class="quiz-explanation-box" id="quizExplanationBox"></div>
+
+          <!-- Submit / Next Button -->
+          <button id="quizSubmitBtn" class="btn-compose" disabled onclick="handleQuizAction()">
+            Periksa Jawaban
+          </button>
+        </div>
+
+        <div id="quizFinishContainer" style="display:none;"></div>
+      </div>
+
+      <!-- 5. CultureScreen (Budaya) -->
+      <div id="screen-culture" class="screen-content">
+        <h1 class="headline-medium">Budaya & Ungkapan Khas</h1>
+        <p class="body-medium-gray">Mengenal warisan kebudayaan dan keunikan bahasa Kota Palembang</p>
+
+        <div id="cultureArticlesContainer"></div>
+      </div>
+
+    </div>
+
+    <!-- Android Material 3 Navigation Bar -->
+    <div class="android-nav-bar">
+      <div class="nav-item active" onclick="switchTab('home')">
+        <div class="nav-icon-pill">
+          <svg class="nav-icon-svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </div>
+        <span>Beranda</span>
+      </div>
+
+      <div class="nav-item" onclick="switchTab('dictionary')">
+        <div class="nav-icon-pill">
+          <svg class="nav-icon-svg" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+        </div>
+        <span>Kamus</span>
+      </div>
+
+      <div class="nav-item" onclick="switchTab('conversation')">
+        <div class="nav-icon-pill">
+          <svg class="nav-icon-svg" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+        </div>
+        <span>Obrolan</span>
+      </div>
+
+      <div class="nav-item" onclick="switchTab('quiz')">
+        <div class="nav-icon-pill">
+          <svg class="nav-icon-svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+        </div>
+        <span>Kuis</span>
+      </div>
+
+      <div class="nav-item" onclick="switchTab('culture')">
+        <div class="nav-icon-pill">
+          <svg class="nav-icon-svg" viewBox="0 0 24 24"><path d="M12 10.9c-.61 0-1.1.49-1.1 1.1s.49 1.1 1.1 1.1c.61 0 1.1-.49 1.1-1.1s-.49-1.1-1.1-1.1zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.19 12.19L6 18l3.81-8.19L18 6l-3.81 8.19z"/></svg>
+        </div>
+        <span>Budaya</span>
+      </div>
+    </div>
+
+    <!-- Android Gesture Bar -->
+    <div class="android-gesture-bar">
+      <div class="gesture-pill"></div>
+    </div>
+
+  </div>
+
+  <script>
+    // â”€â”€ DATA DARI REPOSITORY ANDROID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    const rawWords = [
+    {
+        "id":  "w_aba",
+        "palembang":  "Aba",
+        "indonesia":  "Ayah; orang tua kandung laki-laki",
+        "phonetic":  "/a-ba/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Amen aba la balik dari begawe, njuk tau ebok.",
+        "exampleIndonesia":  "Jika ayah sudah pulang kerja, beri tahu ibu."
+    },
+    {
+        "id":  "w_aban",
+        "palembang":  "Aban",
+        "indonesia":  "Awan",
+        "phonetic":  "/a-ban/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Aban nyo tebel nian tando nak ujan.",
+        "exampleIndonesia":  "Awannya tebal sekali tanda hari akan hujan."
+    },
+    {
+        "id":  "w_abang",
+        "palembang":  "Abang",
+        "indonesia":  "Merah; warna serupa darah",
+        "phonetic":  "/a-bang/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Telok abang bejejer ampir sepanjang pinggir jalan.",
+        "exampleIndonesia":  "Telur merah berjajar hampir sepanjang pinggir jalan."
+    },
+    {
+        "id":  "w_abis",
+        "palembang":  "Abis",
+        "indonesia":  "Habis; selesai; tamat",
+        "phonetic":  "/a-bis/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Makanan di meja abis galo.",
+        "exampleIndonesia":  "Makanan di meja habis semua."
+    },
+    {
+        "id":  "w_abrit",
+        "palembang":  "Abrit-abritan",
+        "indonesia":  "Lari tunggang-langgang karena ketakutan",
+        "phonetic":  "/ab-rit ab-ri-tan/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Maling itu abrit-abritan dilarike uwong rame.",
+        "exampleIndonesia":  "Pencuri itu lari tunggang-langgang dikejar orang banyak."
+    },
+    {
+        "id":  "w_acak",
+        "palembang":  "Acak",
+        "indonesia":  "Bisa; sanggup; dapat",
+        "phonetic":  "/a-cak/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Kau acak dak ngangkek peti ini?",
+        "exampleIndonesia":  "Kamu bisa atau tidak mengangkat peti ini?"
+    },
+    {
+        "id":  "w_acam",
+        "palembang":  "Acam",
+        "indonesia":  "Ancam; menyatakan niat merugikan pihak lain",
+        "phonetic":  "/a-cam/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Maling itu mengacam budak kecik itu paje pisau.",
+        "exampleIndonesia":  "Pencuri itu mengancam anak kecil itu menggunakan pisau."
+    },
+    {
+        "id":  "w_adang",
+        "palembang":  "Adang",
+        "indonesia":  "Hadang; menghalangi jalan",
+        "phonetic":  "/a-dang/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Pencopet itu diadang uwong di lorok.",
+        "exampleIndonesia":  "Pencopet itu dihadang orang di gang."
+    },
+    {
+        "id":  "w_agek",
+        "palembang":  "Agek",
+        "indonesia":  "Nanti",
+        "phonetic":  "/a-gek/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Agek kito ketemu lagi.",
+        "exampleIndonesia":  "Nanti kita bertemu lagi."
+    },
+    {
+        "id":  "w_agok",
+        "palembang":  "Agok",
+        "indonesia":  "Peduli; hirau; ambil pusing",
+        "phonetic":  "/a-gok/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Dak usah agokke omongan uwong itu.",
+        "exampleIndonesia":  "Tidak usah hiraukan perkataan orang itu."
+    },
+    {
+        "id":  "w_akor",
+        "palembang":  "Akor",
+        "indonesia":  "Setuju; mufakat; selaras; damai",
+        "phonetic":  "/a-kor/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Kami la akor nak berangkat besok pagi.",
+        "exampleIndonesia":  "Kami sudah sepakat mau berangkat besok pagi."
+    },
+    {
+        "id":  "w_alaman",
+        "palembang":  "Alaman",
+        "indonesia":  "Halaman; pekarangan rumah",
+        "phonetic":  "/a-la-man/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Budak-budak maen bola di alaman ruma.",
+        "exampleIndonesia":  "Anak-anak bermain bola di halaman rumah."
+    },
+    {
+        "id":  "w_alep",
+        "palembang":  "Alep",
+        "indonesia":  "Anggun; elok; cantik dan sopan",
+        "phonetic":  "/a-lep/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Alep nian rupo budak betino itu.",
+        "exampleIndonesia":  "Sangat anggun paras anak perempuan itu."
+    },
+    {
+        "id":  "w_alap",
+        "palembang":  "Alap",
+        "indonesia":  "Bagus; indah; cantik",
+        "phonetic":  "/a-lap/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Baju yang dipakenyo alap nian.",
+        "exampleIndonesia":  "Baju yang dipakainya bagus sekali."
+    },
+    {
+        "id":  "w_amben",
+        "palembang":  "Amben",
+        "indonesia":  "Bale-bale; tempat tidur dari kayu atau bambu",
+        "phonetic":  "/am-ben/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Kakek tiduk di amben luar.",
+        "exampleIndonesia":  "Kakek tidur di bale-bale luar."
+    },
+    {
+        "id":  "w_ambuk",
+        "palembang":  "Ambuk",
+        "indonesia":  "Pamer; berlagak; sombong",
+        "phonetic":  "/am-buk/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Dak usah nak ngambukken barang baru itu.",
+        "exampleIndonesia":  "Tidak usah memamerkan barang baru itu."
+    },
+    {
+        "id":  "w_amen",
+        "palembang":  "Amen",
+        "indonesia":  "Jika; kalau; apabila",
+        "phonetic":  "/a-men/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Amen kau nak ikut, cepetlah siap-siap.",
+        "exampleIndonesia":  "Jika kamu mau ikut, cepatlah bersiap-siap."
+    },
+    {
+        "id":  "w_ampe",
+        "palembang":  "Ampe",
+        "indonesia":  "Sampai; hingga",
+        "phonetic":  "/am-pe/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio nunggu ampe malam.",
+        "exampleIndonesia":  "Dia menunggu sampai malam."
+    },
+    {
+        "id":  "w_ampar",
+        "palembang":  "Ampar",
+        "indonesia":  "Bentang; menggelar (tikar, karpet)",
+        "phonetic":  "/am-par/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Ampar ke tikar itu di ruang tengah.",
+        "exampleIndonesia":  "Bentangkan tikar itu di ruang tengah."
+    },
+    {
+        "id":  "w_ancur",
+        "palembang":  "Ancur",
+        "indonesia":  "Hancur; rusak berat",
+        "phonetic":  "/an-cur/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Piring itu jatok langsung ancur.",
+        "exampleIndonesia":  "Piring itu jatuh langsung hancur."
+    },
+    {
+        "id":  "w_andok",
+        "palembang":  "Andok",
+        "indonesia":  "Handuk",
+        "phonetic":  "/an-dok/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Andok yang abang dijemur di balok.",
+        "exampleIndonesia":  "Handuk yang merah dijemur di pagar kayu."
+    },
+    {
+        "id":  "w_anget",
+        "palembang":  "Anget",
+        "indonesia":  "Hangat; tidak terlalu panas",
+        "phonetic":  "/an-get/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Minum banyu anget ini supayo sehat.",
+        "exampleIndonesia":  "Minum air hangat ini supaya sehat."
+    },
+    {
+        "id":  "w_angkat",
+        "palembang":  "Angkat",
+        "indonesia":  "Angkat; menaikkan ke atas",
+        "phonetic":  "/ang-kat/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Tolong angkat meja ini ke depan.",
+        "exampleIndonesia":  "Tolong angkat meja ini ke depan."
+    },
+    {
+        "id":  "w_angker",
+        "palembang":  "Angker",
+        "indonesia":  "Seram; menakutkan (tempat berhantu)",
+        "phonetic":  "/ang-ker/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Ruma tua itu terkenal angker.",
+        "exampleIndonesia":  "Rumah tua itu terkenal seram."
+    },
+    {
+        "id":  "w_anjok",
+        "palembang":  "Anjok",
+        "indonesia":  "Anjlok; turun mendadak",
+        "phonetic":  "/an-jok/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Harga karet galak anjok.",
+        "exampleIndonesia":  "Harga karet suka turun mendadak."
+    },
+    {
+        "id":  "w_antar",
+        "palembang":  "Antar",
+        "indonesia":  "Antar; membawa ke suatu tempat",
+        "phonetic":  "/an-tar/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Bisa antar aku ke pasar dak?",
+        "exampleIndonesia":  "Bisa antar aku ke pasar tidak?"
+    },
+    {
+        "id":  "w_anteb",
+        "palembang":  "Anteb",
+        "indonesia":  "Berat; mantap; berbobot",
+        "phonetic":  "/an-teb/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Batu ini anteb nian.",
+        "exampleIndonesia":  "Batu ini berat sekali."
+    },
+    {
+        "id":  "w_antok",
+        "palembang":  "Antok",
+        "indonesia":  "Antuk; bentur",
+        "phonetic":  "/an-tok/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Kepalanyo te-antok di pintu.",
+        "exampleIndonesia":  "Kepalanya terbentur di pintu."
+    },
+    {
+        "id":  "w_anyon",
+        "palembang":  "Anyon",
+        "indonesia":  "Hanyut; terbawa arus air",
+        "phonetic":  "/an-yon/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Kayu besar anyon di sungai Musi.",
+        "exampleIndonesia":  "Kayu besar hanyut di sungai Musi."
+    },
+    {
+        "id":  "w_apak",
+        "palembang":  "Apak",
+        "indonesia":  "Apek; bau tidak sedap karena lembap atau usang",
+        "phonetic":  "/a-pak/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Baju di lemari ini la baung apak.",
+        "exampleIndonesia":  "Baju di lemari ini sudah berbau apek."
+    },
+    {
+        "id":  "w_apo",
+        "palembang":  "Apo",
+        "indonesia":  "Apa",
+        "phonetic":  "/a-po/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Apo yang nak kau beli di pasar?",
+        "exampleIndonesia":  "Apa yang ingin kamu beli di pasar?"
+    },
+    {
+        "id":  "w_apolo",
+        "palembang":  "Apolo",
+        "indonesia":  "Apalagi",
+        "phonetic":  "/a-po-lo/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Makan bae susah, apolo nak beli baju baru.",
+        "exampleIndonesia":  "Makan saja susah, apalagi mau beli baju baru."
+    },
+    {
+        "id":  "w_arak",
+        "palembang":  "Arak",
+        "indonesia":  "Arak; antar bersama-sama (iring-iringan)",
+        "phonetic":  "/a-rak/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Penganten di-arak keliling kampong.",
+        "exampleIndonesia":  "Pengantin diarak keliling kampung."
+    },
+    {
+        "id":  "w_ari",
+        "palembang":  "Ari",
+        "indonesia":  "Hari",
+        "phonetic":  "/a-ri/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ari ni cuaca cerah nian.",
+        "exampleIndonesia":  "Hari ini cuaca sangat cerah."
+    },
+    {
+        "id":  "w_arit",
+        "palembang":  "Arit",
+        "indonesia":  "Sabit; pemotong rumput",
+        "phonetic":  "/a-rit/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ayah motong rumput pake arit.",
+        "exampleIndonesia":  "Ayah memotong rumput menggunakan sabit."
+    },
+    {
+        "id":  "w_asen",
+        "palembang":  "Asen",
+        "indonesia":  "Asin",
+        "phonetic":  "/a-sen/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Gulai ini terlu asen.",
+        "exampleIndonesia":  "Gulai ini terlalu asin."
+    },
+    {
+        "id":  "w_asem",
+        "palembang":  "Asem",
+        "indonesia":  "Asam; buah asam",
+        "phonetic":  "/a-sem/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Mangga ini maseh asem nian.",
+        "exampleIndonesia":  "Mangga ini masih sangat asam."
+    },
+    {
+        "id":  "w_aso",
+        "palembang":  "Aso",
+        "indonesia":  "Rasa; perasaan",
+        "phonetic":  "/a-so/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Cak mano asonyo penganan ini?",
+        "exampleIndonesia":  "Bagaimana rasanya kue ini?"
+    },
+    {
+        "id":  "w_asok",
+        "palembang":  "Asok",
+        "indonesia":  "Asap",
+        "phonetic":  "/a-sok/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Asok dari pembakaran sampah tebel nian.",
+        "exampleIndonesia":  "Asap dari pembakaran sampah tebal sekali."
+    },
+    {
+        "id":  "w_ateng",
+        "palembang":  "Ateng",
+        "indonesia":  "Pendek; kerdil",
+        "phonetic":  "/a-teng/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Uwong itu tubuhnyo ateng.",
+        "exampleIndonesia":  "Orang itu tubuhnya pendek."
+    },
+    {
+        "id":  "w_ateng2",
+        "palembang":  "Ateng-ateng",
+        "indonesia":  "Anting-anting",
+        "phonetic":  "/a-teng a-teng/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio memakai ateng-ateng emas.",
+        "exampleIndonesia":  "Dia memakai anting-anting emas."
+    },
+    {
+        "id":  "w_ati",
+        "palembang":  "Ati",
+        "indonesia":  "Hati",
+        "phonetic":  "/a-ti/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Jago ati dio supayo dak tersinggung.",
+        "exampleIndonesia":  "Jaga hatinya supaya tidak tersinggung."
+    },
+    {
+        "id":  "w_atok",
+        "palembang":  "Atok",
+        "indonesia":  "Kakek; orang tua dari ayah/ibu",
+        "phonetic":  "/a-tok/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Atok lagi duduk di teras.",
+        "exampleIndonesia":  "Kakek sedang duduk di teras."
+    },
+    {
+        "id":  "w_atut",
+        "palembang":  "Atut",
+        "indonesia":  "Patut; pantas; layak",
+        "phonetic":  "/a-tut/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Dak atut kau ngomong cak itu pada uwong tua.",
+        "exampleIndonesia":  "Tidak patut kamu bicara seperti itu pada orang tua."
+    },
+    {
+        "id":  "w_awak",
+        "palembang":  "Awak",
+        "indonesia":  "Badan; tubuh; kamu / diri sendiri",
+        "phonetic":  "/a-wak/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Awak la besar maseh nak dimanja.",
+        "exampleIndonesia":  "Badan sudah besar masih ingin dimanja."
+    },
+    {
+        "id":  "w_awan",
+        "palembang":  "Awan",
+        "indonesia":  "Siang hari (lawan dari malam)",
+        "phonetic":  "/a-wan/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio baru balik katek awan.",
+        "exampleIndonesia":  "Dia baru pulang saat siang hari."
+    },
+    {
+        "id":  "w_awor",
+        "palembang":  "Awor",
+        "indonesia":  "Sebar; hambur; acak-acakan",
+        "phonetic":  "/a-wor/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Jangan ngawor beras itu di lantai.",
+        "exampleIndonesia":  "Jangan menghamburkan beras itu di lantai."
+    },
+    {
+        "id":  "w_ayeb",
+        "palembang":  "Ayeb",
+        "indonesia":  "Aib; cela; cacat",
+        "phonetic":  "/a-yeb/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Jago ayeb keluarga kito.",
+        "exampleIndonesia":  "Jaga aib keluarga kita."
+    },
+    {
+        "id":  "w_ayek",
+        "palembang":  "Ayek",
+        "indonesia":  "Air",
+        "phonetic":  "/a-yek/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ambilke ayek minum secangkir.",
+        "exampleIndonesia":  "Ambilkan air minum secangkir."
+    },
+    {
+        "id":  "w_ayo",
+        "palembang":  "Ayo",
+        "indonesia":  "Mari; ayo (kata ajakan)",
+        "phonetic":  "/a-yo/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ayo kito berangkat sekarang.",
+        "exampleIndonesia":  "Mari kita berangkat sekarang."
+    },
+    {
+        "id":  "w_ayuk",
+        "palembang":  "Ayuk",
+        "indonesia":  "Kakak perempuan",
+        "phonetic":  "/a-yuk/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Ayuk aku begawe di bank.",
+        "exampleIndonesia":  "Kakak perempuanku bekerja di bank."
+    },
+    {
+        "id":  "w_bala",
+        "palembang":  "Ba-lak",
+        "indonesia":  "Bala bencana; malapetaka",
+        "phonetic":  "/ba-lak/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Bedoa mintak dijauhke bala.",
+        "exampleIndonesia":  "Berdoa supaya terhindar dari malapetaka."
+    },
+    {
+        "id":  "w_babang",
+        "palembang":  "Babang",
+        "indonesia":  "Buka lebar-lebar",
+        "phonetic":  "/ba-bang/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Pintu ruma tebabang lebar nian.",
+        "exampleIndonesia":  "Pintu rumah terbuka lebar sekali."
+    },
+    {
+        "id":  "w_babas",
+        "palembang":  "Babas",
+        "indonesia":  "Tebas; babat; memotong rumput/semak",
+        "phonetic":  "/ba-bas/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Mamas lagi nabas rumput di belakang ruma.",
+        "exampleIndonesia":  "Kakak sedang menebas rumput di belakang rumah."
+    },
+    {
+        "id":  "w_bacin",
+        "palembang":  "Bacin",
+        "indonesia":  "Bau busuk menyengat (seperti ikan atau bangkai)",
+        "phonetic":  "/ba-cin/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Iwan yang di meja itu la baung bacin.",
+        "exampleIndonesia":  "Ikan yang di meja itu sudah berbau busuk."
+    },
+    {
+        "id":  "w_bae",
+        "palembang":  "Bae",
+        "indonesia":  "Saja; cuma",
+        "phonetic":  "/bae/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio nak meli pempek bae.",
+        "exampleIndonesia":  "Dia hanya ingin membeli pempek saja."
+    },
+    {
+        "id":  "w_begawe",
+        "palembang":  "Begawe",
+        "indonesia":  "Bekerja; melakukan pekerjaan",
+        "phonetic":  "/be-ga-we/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Bapak la berangkat begawe dari pagi.",
+        "exampleIndonesia":  "Bapak sudah berangkat bekerja dari pagi."
+    },
+    {
+        "id":  "w_bahaso",
+        "palembang":  "Bahaso",
+        "indonesia":  "Bahasa",
+        "phonetic":  "/ba-ha-so/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Kito harus paham bahaso daerah kito.",
+        "exampleIndonesia":  "Kita harus paham bahasa daerah kita."
+    },
+    {
+        "id":  "w_baju",
+        "palembang":  "Baju",
+        "indonesia":  "Pakaian; baju",
+        "phonetic":  "/ba-ju/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Baju baru itu la dijemur.",
+        "exampleIndonesia":  "Baju baru itu sudah dijemur."
+    },
+    {
+        "id":  "w_balik",
+        "palembang":  "Balik",
+        "indonesia":  "Pulang; kembali",
+        "phonetic":  "/ba-lik/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Kapan kau nak balik ke Palembang?",
+        "exampleIndonesia":  "Kapan kamu mau pulang ke Palembang?"
+    },
+    {
+        "id":  "w_bancah",
+        "palembang":  "Bancah",
+        "indonesia":  "Becek; tanah berlumpur dan berair",
+        "phonetic":  "/ban-cah/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Jalan ke pasar bancah nian abis ujan.",
+        "exampleIndonesia":  "Jalan ke pasar becek sekali setelah hujan."
+    },
+    {
+        "id":  "w_banjir",
+        "palembang":  "Banjir",
+        "indonesia":  "Banjir; genangan air yang luas",
+        "phonetic":  "/ban-jir/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Lorong kito sering banjir amen ujan lebat.",
+        "exampleIndonesia":  "Gang kita sering banjir kalau hujan lebat."
+    },
+    {
+        "id":  "w_banyu",
+        "palembang":  "Banyu",
+        "indonesia":  "Air",
+        "phonetic":  "/ban-yu/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Minum banyu anget supayo tenggorokan lega.",
+        "exampleIndonesia":  "Minum air hangat supaya tenggorokan lega."
+    },
+    {
+        "id":  "w_bapak",
+        "palembang":  "Bapak",
+        "indonesia":  "Ayah; bapak",
+        "phonetic":  "/ba-pak/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Bapak lagi moco koran di teras.",
+        "exampleIndonesia":  "Bapak sedang membaca koran di teras."
+    },
+    {
+        "id":  "w_baseng",
+        "palembang":  "Baseng",
+        "indonesia":  "Sembarangan; asal-asalan",
+        "phonetic":  "/ba-seng/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Jangan baseng ngomong depan uwong ramai.",
+        "exampleIndonesia":  "Jangan sembarangan bicara di depan orang banyak."
+    },
+    {
+        "id":  "w_basa",
+        "palembang":  "Basa",
+        "indonesia":  "Basah",
+        "phonetic":  "/ba-sa/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Baju aku basa keno ujan.",
+        "exampleIndonesia":  "Bajuku basah kena hujan."
+    },
+    {
+        "id":  "w_bengak",
+        "palembang":  "Bengak",
+        "indonesia":  "Bodoh; dungu",
+        "phonetic":  "/be-ngak/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Jangan nak bengak nian, belajar yang bener.",
+        "exampleIndonesia":  "Jangan bodoh sekali, belajar yang benar."
+    },
+    {
+        "id":  "w_besak",
+        "palembang":  "Besak",
+        "indonesia":  "Besar",
+        "phonetic":  "/be-sak/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Ruma baru dio besak nian.",
+        "exampleIndonesia":  "Rumah barunya besar sekali."
+    },
+    {
+        "id":  "w_betino",
+        "palembang":  "Betino",
+        "indonesia":  "Perempuan; wanita; betina",
+        "phonetic":  "/be-ti-no/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Budak betino itu cindo nian.",
+        "exampleIndonesia":  "Anak perempuan itu cantik sekali."
+    },
+    {
+        "id":  "w_bibik",
+        "palembang":  "Bibik",
+        "indonesia":  "Bibi; tante; sapaan untuk wanita yang lebih tua",
+        "phonetic":  "/bi-bik/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Bibik lagi masak pempek di dapur.",
+        "exampleIndonesia":  "Bibi sedang memasak pempek di dapur."
+    },
+    {
+        "id":  "w_bingsal",
+        "palembang":  "Bingsal",
+        "indonesia":  "Kesal; jengkel; gusar",
+        "phonetic":  "/bing-sal/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Dio bingsal nian kerno ditinggalke.",
+        "exampleIndonesia":  "Dia kesal sekali karena ditinggalkan."
+    },
+    {
+        "id":  "w_bini",
+        "palembang":  "Bini",
+        "indonesia":  "Istri",
+        "phonetic":  "/bi-ni/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Bini dio begawe jadi guru.",
+        "exampleIndonesia":  "Istrinya bekerja jadi guru."
+    },
+    {
+        "id":  "w_biso",
+        "palembang":  "Biso",
+        "indonesia":  "Bisa; dapat; sanggup",
+        "phonetic":  "/bi-so/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Kau biso bantu aku dak?",
+        "exampleIndonesia":  "Kamu bisa bantu aku tidak?"
+    },
+    {
+        "id":  "w_budak",
+        "palembang":  "Budak",
+        "indonesia":  "Anak; pemuda / anak muda",
+        "phonetic":  "/bu-dak/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Budak-budak lagi maen di alaman.",
+        "exampleIndonesia":  "Anak-anak sedang bermain di halaman."
+    },
+    {
+        "id":  "w_bujang",
+        "palembang":  "Bujang",
+        "indonesia":  "Pemuda; laki-laki yang belum menikah",
+        "phonetic":  "/bu-jang/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Bujang itu rajin nian bantu orang tuonyo.",
+        "exampleIndonesia":  "Pemuda itu rajin sekali membantu orang tuanya."
+    },
+    {
+        "id":  "w_buri",
+        "palembang":  "Buri",
+        "indonesia":  "Belakang",
+        "phonetic":  "/bu-ri/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio dang nunggu di buri ruma.",
+        "exampleIndonesia":  "Dia sedang menunggu di belakang rumah."
+    },
+    {
+        "id":  "w_busik",
+        "palembang":  "Busik",
+        "indonesia":  "Bermain; bercanda",
+        "phonetic":  "/bu-sik/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Jangan busik bae, belajar lah!",
+        "exampleIndonesia":  "Jangan bermain terus, belajarlah!"
+    },
+    {
+        "id":  "w_buyut",
+        "palembang":  "Buyut",
+        "indonesia":  "Buyut; orang tua dari kakek/nenek",
+        "phonetic":  "/bu-yut/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Buyut maseh sehat nian di kampong.",
+        "exampleIndonesia":  "Buyut masih sangat sehat di kampung."
+    },
+    {
+        "id":  "w_cak",
+        "palembang":  "Cak",
+        "indonesia":  "Seperti; bagai; menyerupai",
+        "phonetic":  "/cak/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Muka budak itu cak bapaknyo nian.",
+        "exampleIndonesia":  "Wajah anak itu sangat seperti bapaknya."
+    },
+    {
+        "id":  "w_cakmano",
+        "palembang":  "Cak Mano",
+        "indonesia":  "Bagaimana; dengan cara apa",
+        "phonetic":  "/cak ma-no/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Cak mano caronyo nak nggaweke ini?",
+        "exampleIndonesia":  "Bagaimana caranya mau mengerjakan ini?"
+    },
+    {
+        "id":  "w_cako",
+        "palembang":  "Cako",
+        "indonesia":  "Tadi; belum lama ini",
+        "phonetic":  "/ca-ko/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio cako datang ke ruma.",
+        "exampleIndonesia":  "Dia tadi datang ke rumah."
+    },
+    {
+        "id":  "w_calak",
+        "palembang":  "Calak",
+        "indonesia":  "Cerdik; pandai; terampil",
+        "phonetic":  "/ca-lak/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Budak itu calak nian jawab pertanyaan guru.",
+        "exampleIndonesia":  "Anak itu cerdik sekali menjawab pertanyaan guru."
+    },
+    {
+        "id":  "w_campak",
+        "palembang":  "Campak",
+        "indonesia":  "Jatuh; terlempar",
+        "phonetic":  "/cam-pak/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Dompet dio campak di jalan.",
+        "exampleIndonesia":  "Dompet dia jatuh di jalan."
+    },
+    {
+        "id":  "w_cantel",
+        "palembang":  "Cantel",
+        "indonesia":  "Gantung; kaitkan",
+        "phonetic":  "/can-tel/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Cantelke kunci itu di paku.",
+        "exampleIndonesia":  "Gantungkan kunci itu di paku."
+    },
+    {
+        "id":  "w_cawisan",
+        "palembang":  "Cawisan",
+        "indonesia":  "Persiapan; hidangan yang disediakan untuk tamu",
+        "phonetic":  "/ca-wi-san/",
+        "category":  "KULINER_BUDAYA",
+        "examplePalembang":  "Cawisan untuk tamu la siap galo.",
+        "exampleIndonesia":  "Persiapan/makanan untuk tamu sudah siap semua."
+    },
+    {
+        "id":  "w_cepet",
+        "palembang":  "Cepet",
+        "indonesia":  "Cepat; lekas",
+        "phonetic":  "/ce-pet/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Cepetlah dikit, kito la telat.",
+        "exampleIndonesia":  "Cepatlah sedikit, kita sudah terlambat."
+    },
+    {
+        "id":  "w_cindo",
+        "palembang":  "Cindo",
+        "indonesia":  "Cantik; elok; indah",
+        "phonetic":  "/cin-do/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Lamo dak tejingok kau tambah cindo be.",
+        "exampleIndonesia":  "Lama tidak terlihat kamu tambah cantik saja."
+    },
+    {
+        "id":  "w_cuka",
+        "palembang":  "Cuka",
+        "indonesia":  "Kuah pempek (saus cuka khas Palembang)",
+        "phonetic":  "/cu-ka/",
+        "category":  "KULINER_BUDAYA",
+        "examplePalembang":  "Cuka pempek ini pedas nian.",
+        "exampleIndonesia":  "Kuah pempek ini pedas sekali."
+    },
+    {
+        "id":  "w_curak",
+        "palembang":  "Curak",
+        "indonesia":  "Corak; motif (kain/pakaian)",
+        "phonetic":  "/cu-rak/",
+        "category":  "KULINER_BUDAYA",
+        "examplePalembang":  "Curak kain songket ini bagus nian.",
+        "exampleIndonesia":  "Corak kain songket ini bagus sekali."
+    },
+    {
+        "id":  "w_dalu",
+        "palembang":  "Dalu",
+        "indonesia":  "Tengah malam; larut malam",
+        "phonetic":  "/da-lu/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ari ni la dalu, cepet tiduk.",
+        "exampleIndonesia":  "Hari ini sudah tengah malam, cepat tidur."
+    },
+    {
+        "id":  "w_dang",
+        "palembang":  "Dang",
+        "indonesia":  "Sedang; tengah (melakukan sesuatu)",
+        "phonetic":  "/dang/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio dang makan di dapur.",
+        "exampleIndonesia":  "Dia sedang makan di dapur."
+    },
+    {
+        "id":  "w_dapo",
+        "palembang":  "Dapo",
+        "indonesia":  "Dapur",
+        "phonetic":  "/da-po/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ibu lagi masak di dapo.",
+        "exampleIndonesia":  "Ibu sedang memasak di dapur."
+    },
+    {
+        "id":  "w_deket",
+        "palembang":  "Deket",
+        "indonesia":  "Dekat",
+        "phonetic":  "/de-ket/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Ruma dio deket nian dari sini.",
+        "exampleIndonesia":  "Rumahnya dekat sekali dari sini."
+    },
+    {
+        "id":  "w_denger",
+        "palembang":  "Denger",
+        "indonesia":  "Dengar",
+        "phonetic":  "/de-nger/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Kau denger dak apo yang diomongkenyo?",
+        "exampleIndonesia":  "Kamu dengar tidak apa yang dikatakannya?"
+    },
+    {
+        "id":  "w_dikit",
+        "palembang":  "Dikit",
+        "indonesia":  "Sedikit",
+        "phonetic":  "/di-kit/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Njuk aku banyu dikit.",
+        "exampleIndonesia":  "Beri aku air sedikit."
+    },
+    {
+        "id":  "w_dio",
+        "palembang":  "Dio",
+        "indonesia":  "Dia; ia",
+        "phonetic":  "/di-o/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio kawan aku waktu sekolah.",
+        "exampleIndonesia":  "Dia temanku waktu sekolah."
+    },
+    {
+        "id":  "w_duduk",
+        "palembang":  "Duduk",
+        "indonesia":  "Duduk",
+        "phonetic":  "/du-duk/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Silakan duduk di kursi itu.",
+        "exampleIndonesia":  "Silakan duduk di kursi itu."
+    },
+    {
+        "id":  "w_dusun",
+        "palembang":  "Dusun",
+        "indonesia":  "Desa; kampung halaman",
+        "phonetic":  "/du-sun/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Besok kami nak balik ke dusun.",
+        "exampleIndonesia":  "Besok kami mau pulang ke kampung halaman."
+    },
+    {
+        "id":  "w_ebok",
+        "palembang":  "Ebok",
+        "indonesia":  "Ibu; orang tua kandung perempuan",
+        "phonetic":  "/e-bok/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Ebok lagi beli sayur di pasar.",
+        "exampleIndonesia":  "Ibu sedang membeli sayur di pasar."
+    },
+    {
+        "id":  "w_ecak",
+        "palembang":  "Ecak-ecak",
+        "indonesia":  "Pura-pura; berlagak; seolah-olah",
+        "phonetic":  "/e-cak e-cak/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Jangan ecak-ecak dak tau kau tuh.",
+        "exampleIndonesia":  "Jangan pura-pura tidak tahu kamu itu."
+    },
+    {
+        "id":  "w_ekar",
+        "palembang":  "Ekar",
+        "indonesia":  "Kelereng; gundicu",
+        "phonetic":  "/e-kar/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Budak-budak lagi main ekar di alaman.",
+        "exampleIndonesia":  "Anak-anak sedang bermain kelereng di halaman."
+    },
+    {
+        "id":  "w_elok",
+        "palembang":  "Elok",
+        "indonesia":  "Bagus; baik; indah",
+        "phonetic":  "/e-lok/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Kelakuan budak itu elok nian.",
+        "exampleIndonesia":  "Kelakuan anak itu sangat baik."
+    },
+    {
+        "id":  "w_empar",
+        "palembang":  "Empar",
+        "indonesia":  "Lempar; lontar",
+        "phonetic":  "/em-par/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Jangan ngempar batu ke dalam ayek.",
+        "exampleIndonesia":  "Jangan melempar batu ke dalam air."
+    },
+    {
+        "id":  "w_enjot",
+        "palembang":  "Enjot",
+        "indonesia":  "Genjot; kayuh",
+        "phonetic":  "/en-jot/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Enjot sepeda itu kencang-kencang.",
+        "exampleIndonesia":  "Kayuh sepeda itu kencang-kencang."
+    },
+    {
+        "id":  "w_gabak",
+        "palembang":  "Gabak",
+        "indonesia":  "Mendung; cuaca berawan gelap",
+        "phonetic":  "/ga-bak/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Langit la gabak nian, cepet angkat jemuran.",
+        "exampleIndonesia":  "Langit sudah mendung sekali, cepat angkat jemuran."
+    },
+    {
+        "id":  "w_galak",
+        "palembang":  "Galak",
+        "indonesia":  "Mau; ingin; sering; suka",
+        "phonetic":  "/ga-lak/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Kau galak ikut kami ke pasar dak?",
+        "exampleIndonesia":  "Kamu mau ikut kami ke pasar tidak?"
+    },
+    {
+        "id":  "w_galo",
+        "palembang":  "Galo",
+        "indonesia":  "Semua; seluruhnya",
+        "phonetic":  "/ga-lo/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Makanan di meja habis galo.",
+        "exampleIndonesia":  "Makanan di meja habis semua."
+    },
+    {
+        "id":  "w_gamo",
+        "palembang":  "Gamo",
+        "indonesia":  "Sungkan; segan; enggan",
+        "phonetic":  "/ga-mo/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Aku gamo nak minta tolong lagi.",
+        "exampleIndonesia":  "Aku segan mau minta tolong lagi."
+    },
+    {
+        "id":  "w_gancang",
+        "palembang":  "Gancang",
+        "indonesia":  "Cepat; lekas; sigap",
+        "phonetic":  "/gan-cang/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Gancanglah sikit, bis nak jalan!",
+        "exampleIndonesia":  "Cepatlah sedikit, bus mau jalan!"
+    },
+    {
+        "id":  "w_garang",
+        "palembang":  "Garang",
+        "indonesia":  "Teras depan/samping rumah panggung",
+        "phonetic":  "/ga-rang/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Atok duduk santai di garang ruma.",
+        "exampleIndonesia":  "Kakek duduk santai di teras rumah."
+    },
+    {
+        "id":  "w_gatel",
+        "palembang":  "Gatel",
+        "indonesia":  "Gatal",
+        "phonetic":  "/ga-tel/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Kulit aku gatel keno ulat.",
+        "exampleIndonesia":  "Kulitku gatal kena ulat."
+    },
+    {
+        "id":  "w_getem",
+        "palembang":  "Getem",
+        "indonesia":  "Gemas; gregetan",
+        "phonetic":  "/ge-tem/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Getem nian aku ngeliat budak kecik itu.",
+        "exampleIndonesia":  "Gemas sekali aku melihat anak kecil itu."
+    },
+    {
+        "id":  "w_goco",
+        "palembang":  "Goco",
+        "indonesia":  "Jotos; pukul dengan kepalan tangan",
+        "phonetic":  "/go-co/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Maling itu digoco uwong ramai.",
+        "exampleIndonesia":  "Pencuri itu dijotos orang banyak."
+    },
+    {
+        "id":  "w_gule",
+        "palembang":  "Gule",
+        "indonesia":  "Gula",
+        "phonetic":  "/gu-le/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Tambahke gule di kopi ini supayo manis.",
+        "exampleIndonesia":  "Tambahkan gula di kopi ini supaya manis."
+    },
+    {
+        "id":  "w_hargo",
+        "palembang":  "Hargo",
+        "indonesia":  "Harga",
+        "phonetic":  "/har-go/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Berapa hargo pempek ini sesikok?",
+        "exampleIndonesia":  "Berapa harga pempek ini satuannya?"
+    },
+    {
+        "id":  "w_hilir",
+        "palembang":  "Hilir",
+        "indonesia":  "Hilir; bagian bawah sungai",
+        "phonetic":  "/hi-lir/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Perahu itu belayar ke arah hilir.",
+        "exampleIndonesia":  "Perahu itu berlayar ke arah hilir."
+    },
+    {
+        "id":  "w_hulu",
+        "palembang":  "Hulu",
+        "indonesia":  "Hulu; bagian atas sungai",
+        "phonetic":  "/hu-lu/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio datang dari daerah hulu.",
+        "exampleIndonesia":  "Dia datang dari daerah hulu."
+    },
+    {
+        "id":  "w_ijok",
+        "palembang":  "Ijok",
+        "indonesia":  "Hijau",
+        "phonetic":  "/i-jok/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Baju warna ijok itu punya siapa?",
+        "exampleIndonesia":  "Baju warna hijau itu punya siapa?"
+    },
+    {
+        "id":  "w_iling",
+        "palembang":  "Iling",
+        "indonesia":  "Tuang; curah (cairan)",
+        "phonetic":  "/i-ling/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Ilingke banyu itu ke cangkir.",
+        "exampleIndonesia":  "Tuangkan air itu ke cangkir."
+    },
+    {
+        "id":  "w_inja",
+        "palembang":  "Inja",
+        "indonesia":  "Sejak; semenjak",
+        "phonetic":  "/in-ja/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Inja kecik dio la tinggal di sini.",
+        "exampleIndonesia":  "Sejak kecil dia sudah tinggal di sini."
+    },
+    {
+        "id":  "w_intai",
+        "palembang":  "Intai",
+        "indonesia":  "Intai; intip (dari jauh)",
+        "phonetic":  "/in-tai/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Polisi dang ngintai markas pencopet.",
+        "exampleIndonesia":  "Polisi sedang mengintai markas pencopet."
+    },
+    {
+        "id":  "w_irup",
+        "palembang":  "Irup",
+        "indonesia":  "Hirup; minum langsung dari wadahnya",
+        "phonetic":  "/i-rup/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Irup cuka pempek itu hangat-hangat.",
+        "exampleIndonesia":  "Hirup kuah pempek itu hangat-hangat."
+    },
+    {
+        "id":  "w_iwak",
+        "palembang":  "Iwak",
+        "indonesia":  "Ikan",
+        "phonetic":  "/i-wak/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Iwak belida la langka di sungai Musi.",
+        "exampleIndonesia":  "Ikan belida sudah langka di sungai Musi."
+    },
+    {
+        "id":  "w_jabo",
+        "palembang":  "Jabo",
+        "indonesia":  "Luar; bagian luar",
+        "phonetic":  "/ja-bo/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Duduklah di jabo supayo dak panas.",
+        "exampleIndonesia":  "Duduklah di luar supaya tidak panas."
+    },
+    {
+        "id":  "w_jago",
+        "palembang":  "Jago",
+        "indonesia":  "Jaga; rawat; bangun (tidur)",
+        "phonetic":  "/ja-go/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Jago barang ini elok-elok.",
+        "exampleIndonesia":  "Jaga barang ini baik-baik."
+    },
+    {
+        "id":  "w_jato",
+        "palembang":  "Jato",
+        "indonesia":  "Jatuh",
+        "phonetic":  "/ja-to/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Piring itu jato dari meja.",
+        "exampleIndonesia":  "Piring itu jatuh dari meja."
+    },
+    {
+        "id":  "w_jingok",
+        "palembang":  "Jingok",
+        "indonesia":  "Lihat; pandang",
+        "phonetic":  "/ji-ngok/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Coba kau jingok barang di meja itu.",
+        "exampleIndonesia":  "Coba kamu lihat barang di meja itu."
+    },
+    {
+        "id":  "w_juadah",
+        "palembang":  "Juadah",
+        "indonesia":  "Kue; penganan tradisional",
+        "phonetic":  "/jua-dah/",
+        "category":  "KULINER_BUDAYA",
+        "examplePalembang":  "Ibu nggawe juadah untuk acara hajatan.",
+        "exampleIndonesia":  "Ibu membuat kue untuk acara hajatan."
+    },
+    {
+        "id":  "w_juluk",
+        "palembang":  "Juluk",
+        "indonesia":  "Jolok; mengambil buah dengan galah",
+        "phonetic":  "/ju-luk/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Mamas lagi njuluk buah mangga di samping ruma.",
+        "exampleIndonesia":  "Kakak sedang menjolok buah mangga di samping rumah."
+    },
+    {
+        "id":  "w_kabo",
+        "palembang":  "Kabo",
+        "indonesia":  "Kabut; samar-samar; kurang jelas",
+        "phonetic":  "/ka-bo/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Pemandangan dari atas bukit keno kabo.",
+        "exampleIndonesia":  "Pemandangan dari atas bukit tertutup kabut."
+    },
+    {
+        "id":  "w_kacek",
+        "palembang":  "Kacek",
+        "indonesia":  "Selisih; beda; jarak",
+        "phonetic":  "/ka-cek/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Kacek hargo pempek di dua toko itu cuman seribu.",
+        "exampleIndonesia":  "Selisih harga pempek di dua toko itu cuma seribu."
+    },
+    {
+        "id":  "w_kambang",
+        "palembang":  "Kambang",
+        "indonesia":  "Kolam; genangan air yang cukup luas",
+        "phonetic":  "/kam-bang/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Banyak iwan di dalam kambang itu.",
+        "exampleIndonesia":  "Banyak ikan di dalam kolam itu."
+    },
+    {
+        "id":  "w_kangan",
+        "palembang":  "Kangan",
+        "indonesia":  "Kangen; rindu",
+        "phonetic":  "/ka-ngan/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Aku kangan nian nak balik ke dusun.",
+        "exampleIndonesia":  "Aku kangen sekali ingin pulang ke kampung."
+    },
+    {
+        "id":  "w_karo",
+        "palembang":  "Karo",
+        "indonesia":  "Dengan; bersama",
+        "phonetic":  "/ka-ro/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio berangkat karo kawan-kawannyo.",
+        "exampleIndonesia":  "Dia berangkat bersama teman-temannya."
+    },
+    {
+        "id":  "w_katek",
+        "palembang":  "Katek",
+        "indonesia":  "Tidak ada; ketiadaan",
+        "phonetic":  "/ka-tek/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Katek banyu minum lagi di meja.",
+        "exampleIndonesia":  "Tidak ada air minum lagi di meja."
+    },
+    {
+        "id":  "w_kecik",
+        "palembang":  "Kecik",
+        "indonesia":  "Kecil",
+        "phonetic":  "/ke-cik/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Budak kecik itu rajin nian belajar.",
+        "exampleIndonesia":  "Anak kecil itu rajin sekali belajar."
+    },
+    {
+        "id":  "w_kemaras",
+        "palembang":  "Kemaras",
+        "indonesia":  "Kesal; jengkel luar biasa",
+        "phonetic":  "/ke-ma-ras/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Kemaras nian aku ngeliat tingkah dio.",
+        "exampleIndonesia":  "Kesal sekali aku melihat tingkah dia."
+    },
+    {
+        "id":  "w_kito",
+        "palembang":  "Kito",
+        "indonesia":  "Kita; kami",
+        "phonetic":  "/ki-to/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Kito nak makan di mano hari ni?",
+        "exampleIndonesia":  "Kita mau makan di mana hari ini?"
+    },
+    {
+        "id":  "w_ladang",
+        "palembang":  "Ladang",
+        "indonesia":  "Kebun; ladang",
+        "phonetic":  "/la-dang/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Bapak lagi nanam jagung di ladang.",
+        "exampleIndonesia":  "Bapak sedang menanam jagung di ladang."
+    },
+    {
+        "id":  "w_laki",
+        "palembang":  "Laki",
+        "indonesia":  "Suami; laki-laki",
+        "phonetic":  "/la-ki/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Laki dio begawe di Jakarta.",
+        "exampleIndonesia":  "Suaminya bekerja di Jakarta."
+    },
+    {
+        "id":  "w_lamo",
+        "palembang":  "Lamo",
+        "indonesia":  "Lama",
+        "phonetic":  "/la-mo/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "La lamo kito dak ketemu.",
+        "exampleIndonesia":  "Sudah lama kita tidak bertemu."
+    },
+    {
+        "id":  "w_lanang",
+        "palembang":  "Lanang",
+        "indonesia":  "Laki-laki; pria",
+        "phonetic":  "/la-nang/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Budak lanang itu gagah nian.",
+        "exampleIndonesia":  "Anak laki-laki itu tampan sekali."
+    },
+    {
+        "id":  "w_laju",
+        "palembang":  "Laju",
+        "indonesia":  "Jadi; berlanjut; cepat (kata ajakan)",
+        "phonetic":  "/la-ju/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Laju dak kito pergi ke pasar?",
+        "exampleIndonesia":  "Jadi tidak kita pergi ke pasar?"
+    },
+    {
+        "id":  "w_lemak",
+        "palembang":  "Lemak",
+        "indonesia":  "Enak; lezat; nyaman",
+        "phonetic":  "/le-mak/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Pempek ini lemak nian rasonyo.",
+        "exampleIndonesia":  "Pempek ini sangat enak rasanya."
+    },
+    {
+        "id":  "w_lembo",
+        "palembang":  "Lembo",
+        "indonesia":  "Lambat; lamban; lemas",
+        "phonetic":  "/lem-bo/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Jangan lembo nian begawe tuh, gancang dikit!",
+        "exampleIndonesia":  "Jangan lamban sekali bekerja itu, cepat sedikit!"
+    },
+    {
+        "id":  "w_lorong",
+        "palembang":  "Lorong",
+        "indonesia":  "Gang; jalan kecil",
+        "phonetic":  "/lo-rong/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ruma aku di dalam lorong itu.",
+        "exampleIndonesia":  "Rumahku di dalam gang itu."
+    },
+    {
+        "id":  "w_ludes",
+        "palembang":  "Ludes",
+        "indonesia":  "Habis total; rata; tidak tersisa",
+        "phonetic":  "/lu-des/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Makanan di meja ludes dimakan budak-budak.",
+        "exampleIndonesia":  "Makanan di meja habis total dimakan anak-anak."
+    },
+    {
+        "id":  "w_luko",
+        "palembang":  "Luko",
+        "indonesia":  "Luka",
+        "phonetic":  "/lu-ko/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Kakinyo luko keno pecahan kaco.",
+        "exampleIndonesia":  "Kakinya luka kena pecahan kaca."
+    },
+    {
+        "id":  "w_maken",
+        "palembang":  "Maken",
+        "indonesia":  "Makan",
+        "phonetic":  "/ma-ken/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Payo kito maken pempek bareng-bareng.",
+        "exampleIndonesia":  "Ayo kita makan pempek bersama-sama."
+    },
+    {
+        "id":  "w_maling",
+        "palembang":  "Maling",
+        "indonesia":  "Pencuri; mencuri",
+        "phonetic":  "/ma-ling/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Maling itu ditangkap warga tadi malam.",
+        "exampleIndonesia":  "Pencuri itu ditangkap warga tadi malam."
+    },
+    {
+        "id":  "w_mamas",
+        "palembang":  "Mamas",
+        "indonesia":  "Kakak laki-laki",
+        "phonetic":  "/ma-mas/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Mamas lagi benerke sepeda motor di teras.",
+        "exampleIndonesia":  "Kakak laki-laki sedang memperbaiki sepeda motor di teras."
+    },
+    {
+        "id":  "w_mangcik",
+        "palembang":  "Mangcik",
+        "indonesia":  "Paman; adik laki-laki dari ayah/ibu",
+        "phonetic":  "/mang-cik/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Mangcik baru balik dari Jakarta.",
+        "exampleIndonesia":  "Paman baru pulang dari Jakarta."
+    },
+    {
+        "id":  "w_mano",
+        "palembang":  "Mano",
+        "indonesia":  "Mana",
+        "phonetic":  "/ma-no/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Di mano ruma kau yang baru?",
+        "exampleIndonesia":  "Di mana rumah kamu yang baru?"
+    },
+    {
+        "id":  "w_maren",
+        "palembang":  "Maren",
+        "indonesia":  "Kemarin",
+        "phonetic":  "/ma-ren/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Maren kami pergi ke Jakabaring.",
+        "exampleIndonesia":  "Kemarin kami pergi ke Jakabaring."
+    },
+    {
+        "id":  "w_mayar",
+        "palembang":  "Mayar",
+        "indonesia":  "Bayar",
+        "phonetic":  "/ma-yar/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Siapa yang nak mayar makanan ini?",
+        "exampleIndonesia":  "Siapa yang mau membayar makanan ini?"
+    },
+    {
+        "id":  "w_munggah",
+        "palembang":  "Munggah",
+        "indonesia":  "Tradisi menyambut bulan Ramadan/hajatan",
+        "phonetic":  "/mung-gah/",
+        "category":  "KULINER_BUDAYA",
+        "examplePalembang":  "Warga kampong nggawe acara munggah Ramadan.",
+        "exampleIndonesia":  "Warga kampung mengadakan acara menyambut Ramadan."
+    },
+    {
+        "id":  "w_nak",
+        "palembang":  "Nak",
+        "indonesia":  "Hendak; mau; ingin",
+        "phonetic":  "/nak/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Kau nak pergi ke mano hari ni?",
+        "exampleIndonesia":  "Kamu hendak pergi ke mana hari ini?"
+    },
+    {
+        "id":  "w_nian",
+        "palembang":  "Nian",
+        "indonesia":  "Sangat; sekali; sungguh",
+        "phonetic":  "/ni-an/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Makanan ini enak nian rasonyo.",
+        "exampleIndonesia":  "Makanan ini sangat enak rasanya."
+    },
+    {
+        "id":  "w_njuk",
+        "palembang":  "Njuk",
+        "indonesia":  "Beri; kasih",
+        "phonetic":  "/njuk/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Njuk tau ibuk kau amen kito nak pergi.",
+        "exampleIndonesia":  "Beri tahu ibumu jika kita mau pergi."
+    },
+    {
+        "id":  "w_nuju",
+        "palembang":  "Nuju",
+        "indonesia":  "Menuju; mengarah ke",
+        "phonetic":  "/nu-ju/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Mobil itu nuju ke arah Ampera.",
+        "exampleIndonesia":  "Mobil itu menuju ke arah Ampera."
+    },
+    {
+        "id":  "w_omong",
+        "palembang":  "Omong",
+        "indonesia":  "Bicara; perkataan",
+        "phonetic":  "/o-mong/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Jangan asal omong depan uwong ramai.",
+        "exampleIndonesia":  "Jangan asal bicara di depan orang banyak."
+    },
+    {
+        "id":  "w_ongkos",
+        "palembang":  "Ongkos",
+        "indonesia":  "Ongkos; biaya perjalanan",
+        "phonetic":  "/ong-kos/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Berapa ongkos naek bus ke pasar?",
+        "exampleIndonesia":  "Berapa ongkos naik bus ke pasar?"
+    },
+    {
+        "id":  "w_pake",
+        "palembang":  "Pake",
+        "indonesia":  "Pakai; menggunakan",
+        "phonetic":  "/pa-ke/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Dio pake baju abang hari ni.",
+        "exampleIndonesia":  "Dia memakai baju merah hari ini."
+    },
+    {
+        "id":  "w_pasar",
+        "palembang":  "Pasar",
+        "indonesia":  "Pasar; tempat berjual beli",
+        "phonetic":  "/pa-sar/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ebok lagi beli sayur di pasar.",
+        "exampleIndonesia":  "Ibu sedang membeli sayur di pasar."
+    },
+    {
+        "id":  "w_payo",
+        "palembang":  "Payo",
+        "indonesia":  "Mari; ayo (kata ajakan)",
+        "phonetic":  "/pa-yo/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Payo kito makan pempek bareng-bareng.",
+        "exampleIndonesia":  "Mari kita makan pempek bersama-sama."
+    },
+    {
+        "id":  "w_pelit",
+        "palembang":  "Pelit",
+        "indonesia":  "Pelit; kikir",
+        "phonetic":  "/pe-lit/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Jangan pelit nian karo kawan sendiri.",
+        "exampleIndonesia":  "Jangan pelit sekali dengan teman sendiri."
+    },
+    {
+        "id":  "w_pempek",
+        "palembang":  "Pempek",
+        "indonesia":  "Makanan khas Palembang dari tepung dan ikan",
+        "phonetic":  "/pem-pek/",
+        "category":  "KULINER_BUDAYA",
+        "examplePalembang":  "Pempek panggang ini lemak nian rasonyo.",
+        "exampleIndonesia":  "Pempek panggang ini sangat enak rasanya."
+    },
+    {
+        "id":  "w_pening",
+        "palembang":  "Pening",
+        "indonesia":  "Pusing; sakit kepala; bingung",
+        "phonetic":  "/pe-ning/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Kepala aku pening nian mikirke tugas ini.",
+        "exampleIndonesia":  "Kepalaku pusing sekali memikirkan tugas ini."
+    },
+    {
+        "id":  "w_pitu",
+        "palembang":  "Pitu",
+        "indonesia":  "Tujuh",
+        "phonetic":  "/pi-tu/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Pitu hari lagi kito nak ujian.",
+        "exampleIndonesia":  "Tujuh hari lagi kita mau ujian."
+    },
+    {
+        "id":  "w_pundak",
+        "palembang":  "Pundak",
+        "indonesia":  "Bahu; pundak",
+        "phonetic":  "/pun-dak/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Dio mikul tas berat di pundaknyo.",
+        "exampleIndonesia":  "Dia memikul tas berat di bahunya."
+    },
+    {
+        "id":  "w_rai",
+        "palembang":  "Rai",
+        "indonesia":  "Muka; wajah",
+        "phonetic":  "/rai/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Rai dio mirip nian karo ayuknyo.",
+        "exampleIndonesia":  "Wajahnya mirip sekali dengan kakaknya."
+    },
+    {
+        "id":  "w_rantau",
+        "palembang":  "Rantau",
+        "indonesia":  "Merantau; pergi mencari penghidupan ke negeri lain",
+        "phonetic":  "/ran-tau/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Bujang itu pergi merantau ke Jawa.",
+        "exampleIndonesia":  "Pemuda itu pergi merantau ke Jawa."
+    },
+    {
+        "id":  "w_raso",
+        "palembang":  "Raso",
+        "indonesia":  "Rasa; kira; sangka",
+        "phonetic":  "/ra-so/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Aku raso dio nak balik sore ni.",
+        "exampleIndonesia":  "Aku rasa dia mau pulang sore ini."
+    },
+    {
+        "id":  "w_rewo",
+        "palembang":  "Rewo-rewo",
+        "indonesia":  "Berantakan; acak-acakan (rambut atau pakaian)",
+        "phonetic":  "/re-wo re-wo/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Rambut kau rewo-rewo nian, sisirlah!",
+        "exampleIndonesia":  "Rambutmu acak-acakan sekali, sisirlah!"
+    },
+    {
+        "id":  "w_rimba",
+        "palembang":  "Rimba",
+        "indonesia":  "Hutan lebat; rimba",
+        "phonetic":  "/rim-ba/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Masuk ke dalam rimba harus ati-ati.",
+        "exampleIndonesia":  "Masuk ke dalam hutan lebat harus hati-hati."
+    },
+    {
+        "id":  "w_ringam",
+        "palembang":  "Ringam",
+        "indonesia":  "Risih; terganggu; jengkel karena bising",
+        "phonetic":  "/ri-ngam/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Ringam nian aku ngeringok suaro bising itu.",
+        "exampleIndonesia":  "Risih sekali aku mendengar suara bising itu."
+    },
+    {
+        "id":  "w_ruma",
+        "palembang":  "Ruma",
+        "indonesia":  "Rumah",
+        "phonetic":  "/ru-ma/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Kami lagi ngumpul di ruma nenek.",
+        "exampleIndonesia":  "Kami sedang berkumpul di rumah nenek."
+    },
+    {
+        "id":  "w_sadang",
+        "palembang":  "Sadang",
+        "indonesia":  "Pas; cukup; sedang (ukuran)",
+        "phonetic":  "/sa-dang/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Baju ini sadang nian dipake kau.",
+        "exampleIndonesia":  "Baju ini pas sekali dipakai kamu."
+    },
+    {
+        "id":  "w_sangkek",
+        "palembang":  "Sangkek",
+        "indonesia":  "Keranjang kecil; tas belanja",
+        "phonetic":  "/sang-kek/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Isike belanjaan itu di dalam sangkek.",
+        "exampleIndonesia":  "Isikan belanjaan itu di dalam keranjang."
+    },
+    {
+        "id":  "w_santo",
+        "palembang":  "Santo",
+        "indonesia":  "Santai; tenang; tidak terburu-buru",
+        "phonetic":  "/san-to/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Duduk santo di garang sambil minum teh.",
+        "exampleIndonesia":  "Duduk santai di teras sambil minum teh."
+    },
+    {
+        "id":  "w_saro",
+        "palembang":  "Saro",
+        "indonesia":  "Susah; sulit; menderita",
+        "phonetic":  "/sa-ro/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Saro nian ngerjoke soal matematika ini.",
+        "exampleIndonesia":  "Sulit sekali mengerjakan soal matematika ini."
+    },
+    {
+        "id":  "w_seger",
+        "palembang":  "Seger",
+        "indonesia":  "Segar; sehat; bugar",
+        "phonetic":  "/se-ger/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Minum banyu kelapa muda nggawe badan seger.",
+        "exampleIndonesia":  "Minum air kelapa muda membuat badan segar."
+    },
+    {
+        "id":  "w_segalo",
+        "palembang":  "Segalo",
+        "indonesia":  "Semua; seluruh; segala",
+        "phonetic":  "/se-ga-lo/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Segalo urusan la selesai dikerjoke.",
+        "exampleIndonesia":  "Seluruh urusan sudah selesai dikerjakan."
+    },
+    {
+        "id":  "w_sekaten",
+        "palembang":  "Sekaten",
+        "indonesia":  "Pasar malam; pekan raya hiburan rakyat",
+        "phonetic":  "/se-ka-ten/",
+        "category":  "KULINER_BUDAYA",
+        "examplePalembang":  "Malam minggu kito pergi ke sekaten.",
+        "exampleIndonesia":  "Malam minggu kita pergi ke pasar malam."
+    },
+    {
+        "id":  "w_sekok",
+        "palembang":  "Sekok",
+        "indonesia":  "Satu; sebuah; sebutir",
+        "phonetic":  "/se-kok/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Minta pempek kapal selam sekok.",
+        "exampleIndonesia":  "Minta pempek kapal selam satu."
+    },
+    {
+        "id":  "w_selu",
+        "palembang":  "Selu",
+        "indonesia":  "Santai; perlahan",
+        "phonetic":  "/se-lu/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Selu bae, dak usah teburu-buru.",
+        "exampleIndonesia":  "Santai saja, tidak usah terburu-buru."
+    },
+    {
+        "id":  "w_sipak",
+        "palembang":  "Sipak",
+        "indonesia":  "Sepak; tendang",
+        "phonetic":  "/si-pak/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Sipak bola itu kencang-kencang!",
+        "exampleIndonesia":  "Tendang bola itu kencang-kencang!"
+    },
+    {
+        "id":  "w_siyap",
+        "palembang":  "Siyap",
+        "indonesia":  "Siap; bersedia",
+        "phonetic":  "/si-yap/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Kito la siyap nak berangkat sekarang.",
+        "exampleIndonesia":  "Kita sudah siap mau berangkat sekarang."
+    },
+    {
+        "id":  "w_tando",
+        "palembang":  "Tando",
+        "indonesia":  "Tanda; isyarat",
+        "phonetic":  "/tan-do/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Aban tebel itu tando nak ujan.",
+        "exampleIndonesia":  "Awan tebal itu tanda mau hujan."
+    },
+    {
+        "id":  "w_tau",
+        "palembang":  "Tau",
+        "indonesia":  "Tahu; mengerti; kenal",
+        "phonetic":  "/tau/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Aku dak tau ruma dio di mano.",
+        "exampleIndonesia":  "Aku tidak tahu rumah dia di mana."
+    },
+    {
+        "id":  "w_tebel",
+        "palembang":  "Tebel",
+        "indonesia":  "Tebal",
+        "phonetic":  "/te-bel/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Buku ini tebel nian.",
+        "exampleIndonesia":  "Buku ini tebal sekali."
+    },
+    {
+        "id":  "w_tekecik",
+        "palembang":  "Tekecik",
+        "indonesia":  "Terkejut; kaget mendadak",
+        "phonetic":  "/te-ke-cik/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Aku tekecik ngeringok suaro petak itu.",
+        "exampleIndonesia":  "Aku kaget mendengarkan suara petir itu."
+    },
+    {
+        "id":  "w_telat",
+        "palembang":  "Telat",
+        "indonesia":  "Terlambat; kasip",
+        "phonetic":  "/te-lat/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Jangan sampai telat masuk sekolah.",
+        "exampleIndonesia":  "Jangan sampai terlambat masuk sekolah."
+    },
+    {
+        "id":  "w_telok",
+        "palembang":  "Telok",
+        "indonesia":  "Telur",
+        "phonetic":  "/te-lok/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ngadepi 17 Agustus banyak dijual telok abang.",
+        "exampleIndonesia":  "Menghadapi 17 Agustus banyak dijual telur merah."
+    },
+    {
+        "id":  "w_tiduk",
+        "palembang":  "Tiduk",
+        "indonesia":  "Tidur",
+        "phonetic":  "/ti-duk/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Ari ni la dalu, cepet tiduk!",
+        "exampleIndonesia":  "Hari ini sudah tengah malam, cepat tidur!"
+    },
+    {
+        "id":  "w_tuo",
+        "palembang":  "Tuo",
+        "indonesia":  "Tua",
+        "phonetic":  "/tu-o/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Wong tuo itu maseh kuat jalan jauh.",
+        "exampleIndonesia":  "Orang tua itu masih kuat jalan jauh."
+    },
+    {
+        "id":  "w_ujan",
+        "palembang":  "Ujan",
+        "indonesia":  "Hujan",
+        "phonetic":  "/u-jan/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Aban nyo tebel nian tando nak ujan.",
+        "exampleIndonesia":  "Awannya tebal sekali tanda mau hujan."
+    },
+    {
+        "id":  "w_ulu",
+        "palembang":  "Ulu",
+        "indonesia":  "Hulu; daerah pangkal sungai",
+        "phonetic":  "/u-lu/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Orang dari daerah ulu ramai berdagang ke pasar.",
+        "exampleIndonesia":  "Orang dari daerah hulu ramai berdagang ke pasar."
+    },
+    {
+        "id":  "w_umur",
+        "palembang":  "Umur",
+        "indonesia":  "Umur; usia",
+        "phonetic":  "/u-mur/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Berapa umur kau sekarang?",
+        "exampleIndonesia":  "Berapa umur kamu sekarang?"
+    },
+    {
+        "id":  "w_unjuk",
+        "palembang":  "Unjuk",
+        "indonesia":  "Beri; serahkan; kasih",
+        "phonetic":  "/un-juk/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Unjukke surat ini pada bapak kau.",
+        "exampleIndonesia":  "Berikan surat ini kepada bapakmu."
+    },
+    {
+        "id":  "w_uwong",
+        "palembang":  "Uwong",
+        "indonesia":  "Orang; manusia",
+        "phonetic":  "/u-wong/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Banyak uwong ngumpul di lapangan.",
+        "exampleIndonesia":  "Banyak orang berkumpul di lapangan."
+    },
+    {
+        "id":  "w_wayang",
+        "palembang":  "Wayang",
+        "indonesia":  "Wayang; pertunjukan seni tradisional",
+        "phonetic":  "/wa-yang/",
+        "category":  "KULINER_BUDAYA",
+        "examplePalembang":  "Ada pertunjukan wayang di balai desa.",
+        "exampleIndonesia":  "Ada pertunjukan wayang di balai desa."
+    },
+    {
+        "id":  "w_wong",
+        "palembang":  "Wong",
+        "indonesia":  "Orang (bentuk singkat dari uwong)",
+        "phonetic":  "/wong/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Wong Palembang galak makan pempek.",
+        "exampleIndonesia":  "Orang Palembang suka makan pempek."
+    },
+    {
+        "id":  "w_yaam",
+        "palembang":  "Ya\u0027am",
+        "indonesia":  "Kata seru keheranan / penegasan (ya ampun)",
+        "phonetic":  "/ya-am/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ya\u0027am, ngapa kau biso tejeluk ke situ!",
+        "exampleIndonesia":  "Ya ampun, kenapa kamu bisa terperosok ke situ!"
+    },
+    {
+        "id":  "w_yasalam",
+        "palembang":  "Ya-salam",
+        "indonesia":  "Kata seru mengeluh/terkejut",
+        "phonetic":  "/ya sa-lam/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Ya-salam, mahal nian hargo barang ni!",
+        "exampleIndonesia":  "Ya salam, mahal sekali harga barang ini!"
+    },
+    {
+        "id":  "w_yasin",
+        "palembang":  "Yasin",
+        "indonesia":  "Surah Yasin / acara pengajian Yasinan",
+        "phonetic":  "/ya-sin/",
+        "category":  "KULINER_BUDAYA",
+        "examplePalembang":  "Malam jumat ada acara yasinan di ruma tetangga.",
+        "exampleIndonesia":  "Malam jumat ada acara yasinan di rumah tetangga."
+    },
+    {
+        "id":  "w_ziarah",
+        "palembang":  "Ziarah",
+        "indonesia":  "Ziarah; berkunjung ke makam",
+        "phonetic":  "/zi-a-rah/",
+        "category":  "KULINER_BUDAYA",
+        "examplePalembang":  "Sebelum puaso kito ziarah ke kuburan keluarga.",
+        "exampleIndonesia":  "Sebelum puasa kita ziarah ke kuburan keluarga."
+    },
+    {
+        "id":  "w_pacak",
+        "palembang":  "Pacak",
+        "indonesia":  "Bisa; sanggup",
+        "phonetic":  "/pa-cak/",
+        "category":  "SEHARI_HARI",
+        "examplePalembang":  "Aku pacak mbuat pempek lenjer sendiri.",
+        "exampleIndonesia":  "Saya bisa membuat pempek lenjer sendiri."
+    },
+    {
+        "id":  "w_gelo",
+        "palembang":  "Gelo",
+        "indonesia":  "Main-main; gila; bercanda",
+        "phonetic":  "/ge-lo/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Jangan gelo, kito nak ujian besok!",
+        "exampleIndonesia":  "Jangan main-main, kita mau ujian besok!"
+    },
+    {
+        "id":  "w_beliang",
+        "palembang":  "Beliang",
+        "indonesia":  "Dingin menggigil",
+        "phonetic":  "/be-li-ang/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Badan terasa beliang keno angin malam Musi.",
+        "exampleIndonesia":  "Badan terasa menggigil kena angin malam Sungai Musi."
+    },
+    {
+        "id":  "w_daksok",
+        "palembang":  "Daksok",
+        "indonesia":  "Sok tahu; merasa paling paham",
+        "phonetic":  "/dak-sok/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Jangan daksok kalo dak tau cerita sebenarnya.",
+        "exampleIndonesia":  "Jangan sok tahu kalau tidak tahu cerita sebenarnya."
+    },
+    {
+        "id":  "w_tekolek",
+        "palembang":  "Tekolek",
+        "indonesia":  "Tergeletak; tertidur terkapar",
+        "phonetic":  "/te-ko-lek/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Keno capek nian, dio langsung tekolek di kamar.",
+        "exampleIndonesia":  "Karena capek sekali, dia langsung tergeletak di kamar."
+    },
+    {
+        "id":  "w_sanjo",
+        "palembang":  "Sanjo",
+        "indonesia":  "Bertamu; berkunjung",
+        "phonetic":  "/san-jo/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Waktu Lebaran kito sanjo ke rumah tetangga.",
+        "exampleIndonesia":  "Waktu Lebaran kita berkunjung ke rumah tetangga."
+    },
+    {
+        "id":  "w_dulur",
+        "palembang":  "Dulur",
+        "indonesia":  "Saudara; kerabat",
+        "phonetic":  "/du-lur/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Halo dulur-dulur galo, apo kabar hari ini?",
+        "exampleIndonesia":  "Halo saudara-saudara sekalian, apa kabar hari ini?"
+    },
+    {
+        "id":  "w_bicik",
+        "palembang":  "Bicik",
+        "indonesia":  "Bibi / Ibu (panggilan wanita yang lebih tua)",
+        "phonetic":  "/bi-cik/",
+        "category":  "KELUARGA",
+        "examplePalembang":  "Bicik jualan kemplang tunu enak dekat Ampera.",
+        "exampleIndonesia":  "Bibi jualan kemplang bakar enak di dekat Ampera."
+    },
+    {
+        "id":  "w_bungaran",
+        "palembang":  "Bungaran",
+        "indonesia":  "Pertama",
+        "phonetic":  "/bu-nga-ran/",
+        "category":  "KATA_BILANGAN",
+        "examplePalembang":  "Niki wulan bungaran.",
+        "exampleIndonesia":  "Ini bulan pertama."
+    },
+    {
+        "id":  "w_kale",
+        "palembang":  "Kale",
+        "indonesia":  "Dua",
+        "phonetic":  "/ka-le/",
+        "category":  "KATA_BILANGAN",
+        "examplePalembang":  "Kulo gadah ayam kale.",
+        "exampleIndonesia":  "Saya punya ayam dua."
+    },
+    {
+        "id":  "w_selikor",
+        "palembang":  "Selikor",
+        "indonesia":  "Dua puluh satu (21)",
+        "phonetic":  "/se-li-kor/",
+        "category":  "KATA_BILANGAN",
+        "examplePalembang":  "Umur kulo selikor taun.",
+        "exampleIndonesia":  "Umur saya dua puluh satu tahun."
+    },
+    {
+        "id":  "w_selawe",
+        "palembang":  "Selawe",
+        "indonesia":  "Dua puluh lima (25)",
+        "phonetic":  "/se-la-we/",
+        "category":  "KATA_BILANGAN",
+        "examplePalembang":  "Regane selawe ewu.",
+        "exampleIndonesia":  "Harganya dua puluh lima ribu."
+    },
+    {
+        "id":  "w_enggi",
+        "palembang":  "Enggi",
+        "indonesia":  "Iya",
+        "phonetic":  "/eng-gi/",
+        "category":  "PARTIKEL",
+        "examplePalembang":  "Enggi, kulo ayun kesa dumin.",
+        "exampleIndonesia":  "Iya, saya hendak pergi dulu."
+    },
+    {
+        "id":  "w_majeng",
+        "palembang":  "Majeng",
+        "indonesia":  "Silahkan; baiklah",
+        "phonetic":  "/ma-jeng/",
+        "category":  "KATA_SERU",
+        "examplePalembang":  "Majeng, dipun cobi dumin.",
+        "exampleIndonesia":  "Silahkan, dicoba dulu."
+    },
+    {
+        "id":  "w_leserlaniku",
+        "palembang":  "Leserla niku",
+        "indonesia":  "Baguslah itu",
+        "phonetic":  "/le-ser-la ni-ku/",
+        "category":  "KATA_SERU",
+        "examplePalembang":  "Leserla niku lamun niko angsal.",
+        "exampleIndonesia":  "Baguslah itu kalau kamu dapat."
+    },
+    {
+        "id":  "w_nano",
+        "palembang":  "Nano",
+        "indonesia":  "Tidak",
+        "phonetic":  "/na-no/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Kulo nano ngertos napi-napi.",
+        "exampleIndonesia":  "Saya tidak mengerti apa-apa."
+    },
+    {
+        "id":  "w_ayun",
+        "palembang":  "Ayun",
+        "indonesia":  "Akan; hendak",
+        "phonetic":  "/a-yun/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Kulo ayun nedo ring warung.",
+        "exampleIndonesia":  "Saya hendak makan di warung."
+    },
+    {
+        "id":  "w_dereng",
+        "palembang":  "Dereng",
+        "indonesia":  "Belum",
+        "phonetic":  "/de-reng/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Kulo dereng nedo saking wau.",
+        "exampleIndonesia":  "Saya belum makan dari tadi."
+    },
+    {
+        "id":  "w_maler",
+        "palembang":  "Maler",
+        "indonesia":  "Belum (alternatif)",
+        "phonetic":  "/ma-ler/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Damelan kulo maler rampung.",
+        "exampleIndonesia":  "Pekerjaan saya belum selesai."
+    },
+    {
+        "id":  "w_sampun",
+        "palembang":  "Sampun",
+        "indonesia":  "Sudah",
+        "phonetic":  "/sam-pun/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Kulo sampun nedo.",
+        "exampleIndonesia":  "Saya sudah makan."
+    },
+    {
+        "id":  "w_dumin",
+        "palembang":  "Dumin",
+        "indonesia":  "Dulu",
+        "phonetic":  "/du-min/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Kulo linggi mriki dumin.",
+        "exampleIndonesia":  "Saya duduk di sini dulu."
+    },
+    {
+        "id":  "w_maniki",
+        "palembang":  "Ma\u0027niki",
+        "indonesia":  "Seperti ini",
+        "phonetic":  "/ma-ni-ki/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Carane ma\u0027niki, dereng ngertos?",
+        "exampleIndonesia":  "Caranya seperti ini, belum mengerti?"
+    },
+    {
+        "id":  "w_saos",
+        "palembang":  "Saos",
+        "indonesia":  "Saja",
+        "phonetic":  "/sa-os/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Kulo mesen siji saos.",
+        "exampleIndonesia":  "Saya pesan satu saja."
+    },
+    {
+        "id":  "w_wayawaya",
+        "palembang":  "Waya-waya",
+        "indonesia":  "Kira-kira",
+        "phonetic":  "/wa-ya-wa-ya/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Waya-waya jam pinten niko mantu?",
+        "exampleIndonesia":  "Kira-kira jam berapa kamu pulang?"
+    },
+    {
+        "id":  "w_wenten",
+        "palembang":  "Wenten",
+        "indonesia":  "Ada",
+        "phonetic":  "/wen-ten/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Napi wenten tiyang ring griya?",
+        "exampleIndonesia":  "Apa ada orang di rumah?"
+    },
+    {
+        "id":  "w_besamisami",
+        "palembang":  "Besami-sami",
+        "indonesia":  "Bersama-sama",
+        "phonetic":  "/be-sa-mi-sa-mi/",
+        "category":  "KATA_KETERANGAN",
+        "examplePalembang":  "Kito kesa besami-sami.",
+        "exampleIndonesia":  "Kita pergi bersama-sama."
+    },
+    {
+        "id":  "w_niko",
+        "palembang":  "Niko",
+        "indonesia":  "Kamu; anda",
+        "phonetic":  "/ni-ko/",
+        "category":  "KATA_GANTI",
+        "examplePalembang":  "Niko ayun kesa pundi?",
+        "exampleIndonesia":  "Kamu hendak pergi ke mana?"
+    },
+    {
+        "id":  "w_kulo",
+        "palembang":  "Kulo",
+        "indonesia":  "Saya; aku",
+        "phonetic":  "/ku-lo/",
+        "category":  "KATA_GANTI",
+        "examplePalembang":  "Kulo rencang niko.",
+        "exampleIndonesia":  "Saya kawan kamu."
+    },
+    {
+        "id":  "w_pinten",
+        "palembang":  "Pinten",
+        "indonesia":  "Berapa",
+        "phonetic":  "/pin-ten/",
+        "category":  "KATA_TANYA",
+        "examplePalembang":  "Regi klambi niki pinten?",
+        "exampleIndonesia":  "Harga baju ini berapa?"
+    },
+    {
+        "id":  "w_sinten",
+        "palembang":  "Sinten",
+        "indonesia":  "Siapa",
+        "phonetic":  "/sin-ten/",
+        "category":  "KATA_TANYA",
+        "examplePalembang":  "Tiyang niko niku sinten?",
+        "exampleIndonesia":  "Orang itu siapa?"
+    },
+    {
+        "id":  "w_napi",
+        "palembang":  "Napi",
+        "indonesia":  "Apa",
+        "phonetic":  "/na-pi/",
+        "category":  "KATA_TANYA",
+        "examplePalembang":  "Niko ayun mendet napi?",
+        "exampleIndonesia":  "Kamu hendak mengambil apa?"
+    },
+    {
+        "id":  "w_pundi",
+        "palembang":  "Pundi",
+        "indonesia":  "Mana",
+        "phonetic":  "/pun-di/",
+        "category":  "KATA_TANYA",
+        "examplePalembang":  "Griya niko ring pundi?",
+        "exampleIndonesia":  "Rumah kamu di mana?"
+    },
+    {
+        "id":  "w_mapundi",
+        "palembang":  "Ma\u0027pundi",
+        "indonesia":  "Bagaimana",
+        "phonetic":  "/ma-pun-di/",
+        "category":  "KATA_TANYA",
+        "examplePalembang":  "Ma\u0027pundi carane damel niki?",
+        "exampleIndonesia":  "Bagaimana caranya membuat ini?"
+    },
+    {
+        "id":  "w_sami",
+        "palembang":  "Sami",
+        "indonesia":  "Sama",
+        "phonetic":  "/sa-mi/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Baju niki warnane sami.",
+        "exampleIndonesia":  "Baju ini warnanya sama."
+    },
+    {
+        "id":  "w_alit",
+        "palembang":  "Alit",
+        "indonesia":  "Kecil",
+        "phonetic":  "/a-lit/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Griya niku katingal alit.",
+        "exampleIndonesia":  "Rumah itu terlihat kecil."
+    },
+    {
+        "id":  "w_bebedo",
+        "palembang":  "Bebedo",
+        "indonesia":  "Berbeda",
+        "phonetic":  "/be-be-do/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Buku niki bebedo saking liane.",
+        "exampleIndonesia":  "Buku ini berbeda dari yang lain."
+    },
+    {
+        "id":  "w_penetpenet",
+        "palembang":  "Penet-penet",
+        "indonesia":  "Baik-baik saja",
+        "phonetic":  "/pe-net-pe-net/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Kulo penet-penet saos mriki.",
+        "exampleIndonesia":  "Saya baik-baik saja di sini."
+    },
+    {
+        "id":  "w_tebi",
+        "palembang":  "Tebi",
+        "indonesia":  "Jauh",
+        "phonetic":  "/te-bi/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Sekolahan niku tebi nian.",
+        "exampleIndonesia":  "Sekolahan itu jauh sekali."
+    },
+    {
+        "id":  "w_lian",
+        "palembang":  "Lian",
+        "indonesia":  "Lain",
+        "phonetic":  "/li-an/",
+        "category":  "KATA_SIFAT",
+        "examplePalembang":  "Wenten warna lian boten?",
+        "exampleIndonesia":  "Ada warna lain tidak?"
+    },
+    {
+        "id":  "w_mantu",
+        "palembang":  "Mantu",
+        "indonesia":  "Pulang; balik",
+        "phonetic":  "/man-tu/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Kulo ayun mantu dumin.",
+        "exampleIndonesia":  "Saya hendak pulang dulu."
+    },
+    {
+        "id":  "w_angsal",
+        "palembang":  "Angsal",
+        "indonesia":  "Bisa; dapat",
+        "phonetic":  "/ang-sal/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Napi kulo angsal nderek?",
+        "exampleIndonesia":  "Apa saya bisa ikut?"
+    },
+    {
+        "id":  "w_nedo",
+        "palembang":  "Nedo",
+        "indonesia":  "Makan",
+        "phonetic":  "/ne-do/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Majeng nedo besami-sami.",
+        "exampleIndonesia":  "Silahkan makan bersama-sama."
+    },
+    {
+        "id":  "w_ngimutke",
+        "palembang":  "Ngimutke",
+        "indonesia":  "Mengingatkan",
+        "phonetic":  "/ngi-mut-ke/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Kulo saos ngimutke niko.",
+        "exampleIndonesia":  "Saya hanya mengingatkan kamu."
+    },
+    {
+        "id":  "w_belimban",
+        "palembang":  "Belimban",
+        "indonesia":  "Pinjam",
+        "phonetic":  "/be-lim-ban/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Kulo ayun belimban payung.",
+        "exampleIndonesia":  "Saya hendak pinjam payung."
+    },
+    {
+        "id":  "w_kesa",
+        "palembang":  "Kesa",
+        "indonesia":  "Pergi",
+        "phonetic":  "/ke-sa/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Niko ayun kesa jam pinten?",
+        "exampleIndonesia":  "Kamu akan pergi jam berapa?"
+    },
+    {
+        "id":  "w_linggi",
+        "palembang":  "Linggi",
+        "indonesia":  "Duduk",
+        "phonetic":  "/ling-gi/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Majeng linggi ring kursi niki.",
+        "exampleIndonesia":  "Silahkan duduk di kursi ini."
+    },
+    {
+        "id":  "w_panggi",
+        "palembang":  "Panggi",
+        "indonesia":  "Ketemu",
+        "phonetic":  "/pang-gi/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Kulo panggi rencang ring pasar.",
+        "exampleIndonesia":  "Saya ketemu kawan di pasar."
+    },
+    {
+        "id":  "w_maen",
+        "palembang":  "Maen",
+        "indonesia":  "Bermain",
+        "phonetic":  "/ma-en/",
+        "category":  "KATA_KERJA",
+        "examplePalembang":  "Kulo ayun maen dumin.",
+        "exampleIndonesia":  "Saya hendak bermain dulu."
+    },
+    {
+        "id":  "w_panjang",
+        "palembang":  "Panjang",
+        "indonesia":  "Piring makan",
+        "phonetic":  "/pan-jang/",
+        "category":  "KATA_BENDA",
+        "examplePalembang":  "Tolong pendetke panjang ring dapur.",
+        "exampleIndonesia":  "Tolong ambilkan piring makan di dapur."
+    },
+    {
+        "id":  "w_pelataran",
+        "palembang":  "Pelataran",
+        "indonesia":  "Halaman",
+        "phonetic":  "/pe-la-ta-ran/",
+        "category":  "KATA_BENDA",
+        "examplePalembang":  "Lare-lare maen ring pelataran.",
+        "exampleIndonesia":  "Anak-anak bermain di halaman."
+    },
+    {
+        "id":  "w_rencang",
+        "palembang":  "Rencang",
+        "indonesia":  "Kawan",
+        "phonetic":  "/ren-cang/",
+        "category":  "KATA_BENDA",
+        "examplePalembang":  "Niko niku rencang kulo.",
+        "exampleIndonesia":  "Kamu itu kawan saya."
+    },
+    {
+        "id":  "w_ekar2",
+        "palembang":  "Ekar (Kelereng)",
+        "indonesia":  "Kelereng",
+        "phonetic":  "/e-kar/",
+        "category":  "KATA_BENDA",
+        "examplePalembang":  "Lare-lare maen ekar ring pelataran.",
+        "exampleIndonesia":  "Anak-anak bermain kelereng di halaman."
+    }
+];
+    const quizQuestions = [
+    {
+        "id":  "q1",
+        "question":  "Apa arti kata \u0027Lemak\u0027 dalam bahasa Palembang?",
+        "options":  [
+                        "Gemuk / Berlemak",
+                        "Enak / Lezat / Nyaman",
+                        "Asin",
+                        "Pedas"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Lemak\u0027 dalam bahasa Palembang berarti Enak, Lezat, atau Nyaman — bukan makna biologis lemak."
+    },
+    {
+        "id":  "q2",
+        "question":  "Kata \u0027Wong Kito Galo\u0027 berarti...",
+        "options":  [
+                        "Orang Luar Kota",
+                        "Makanan Pempek",
+                        "Orang Kita Semua",
+                        "Sungai Musi"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Wong Kito Galo\u0027 adalah slogan kebersamaan masyarakat Palembang yang berarti Orang Kita Semua."
+    },
+    {
+        "id":  "q3",
+        "question":  "Apa arti kata \u0027Nian\u0027 dalam kalimat \u0027Cindo nian kau!\u0027?",
+        "options":  [
+                        "Sekali / Sangat",
+                        "Tadi",
+                        "Nanti",
+                        "Jangan"
+                    ],
+        "correct":  0,
+        "explanation":  "\u0027Nian\u0027 berarti sangat atau sekali. \u0027Cindo nian\u0027 artinya cantik sekali."
+    },
+    {
+        "id":  "q4",
+        "question":  "Sapaan untuk kakak perempuan dalam bahasa Palembang adalah...",
+        "options":  [
+                        "Mamas",
+                        "Bicik",
+                        "Ayuk",
+                        "Ebok"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Ayuk\u0027 adalah panggilan untuk kakak perempuan. \u0027Mamas\u0027 untuk kakak laki-laki."
+    },
+    {
+        "id":  "q5",
+        "question":  "Kata \u0027Agek\u0027 mengacu pada waktu...",
+        "options":  [
+                        "Kemarin",
+                        "Sekarang",
+                        "Tadi",
+                        "Nanti"
+                    ],
+        "correct":  3,
+        "explanation":  "\u0027Agek\u0027 berarti Nanti. Contoh: \u0027Agek kito ketemu lagi\u0027 = Nanti kita bertemu lagi."
+    },
+    {
+        "id":  "q6",
+        "question":  "Apa arti \u0027Ebok\u0027 dalam bahasa Palembang?",
+        "options":  [
+                        "Nenek",
+                        "Ibu / Orang tua perempuan",
+                        "Bibi",
+                        "Kakak perempuan"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Ebok\u0027 adalah sebutan untuk ibu atau orang tua kandung perempuan."
+    },
+    {
+        "id":  "q7",
+        "question":  "Jika seseorang bilang \u0027Ayek la katek\u0027, artinya...",
+        "options":  [
+                        "Air sudah panas",
+                        "Air sudah dingin",
+                        "Air sudah tidak ada",
+                        "Air sudah banyak"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Katek\u0027 berarti tidak ada. \u0027Ayek la katek\u0027 artinya air sudah tidak ada."
+    },
+    {
+        "id":  "q8",
+        "question":  "Kata \u0027Gancang\u0027 dalam bahasa Palembang berarti...",
+        "options":  [
+                        "Lambat",
+                        "Cepat / Lekas / Sigap",
+                        "Santai",
+                        "Diam"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Gancang\u0027 berarti cepat atau sigap. Kebalikannya adalah \u0027Lembo\u0027 yang berarti lambat."
+    },
+    {
+        "id":  "q9",
+        "question":  "Apa arti kata \u0027Dang\u0027 dalam kalimat \u0027Dio dang makan\u0027?",
+        "options":  [
+                        "Sudah selesai",
+                        "Sedang / Tengah",
+                        "Akan / Mau",
+                        "Tidak mau"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Dang\u0027 berarti sedang. \u0027Dio dang makan\u0027 artinya Dia sedang makan."
+    },
+    {
+        "id":  "q10",
+        "question":  "Makanan khas Palembang dengan kuah \u0027Cuko\u0027 adalah...",
+        "options":  [
+                        "Rendang",
+                        "Soto Betawi",
+                        "Pempek",
+                        "Gado-gado"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Pempek\u0027 adalah kuliner khas Palembang yang dimakan bersama kuah \u0027Cuko\u0027 yang pedas asam."
+    },
+    {
+        "id":  "q11",
+        "question":  "Apa arti \u0027Mamas\u0027 dalam bahasa Palembang?",
+        "options":  [
+                        "Paman",
+                        "Kakak laki-laki",
+                        "Adik laki-laki",
+                        "Ayah"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Mamas\u0027 adalah panggilan untuk kakak laki-laki."
+    },
+    {
+        "id":  "q12",
+        "question":  "Kata \u0027Cindo\u0027 berarti...",
+        "options":  [
+                        "Jelek",
+                        "Cantik / Elok / Indah",
+                        "Mahal",
+                        "Jauh"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Cindo\u0027 berarti cantik atau elok. Sering digunakan untuk memuji penampilan seseorang."
+    },
+    {
+        "id":  "q13",
+        "question":  "Apa arti \u0027Baseng\u0027 dalam bahasa Palembang?",
+        "options":  [
+                        "Berbau segar",
+                        "Sembarangan / Asal-asalan",
+                        "Sangat banyak",
+                        "Terlambat"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Baseng\u0027 berarti sembarangan atau asal-asalan. Contoh: \u0027Jangan baseng ngomong\u0027 = jangan sembarangan bicara."
+    },
+    {
+        "id":  "q14",
+        "question":  "Kata \u0027Atok\u0027 dalam bahasa Palembang berarti...",
+        "options":  [
+                        "Ayah",
+                        "Paman",
+                        "Kakek",
+                        "Kakak"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Atok\u0027 adalah panggilan untuk kakek, yaitu orang tua dari ayah atau ibu."
+    },
+    {
+        "id":  "q15",
+        "question":  "Apa arti \u0027Galak\u0027 dalam konteks bahasa Palembang sehari-hari?",
+        "options":  [
+                        "Garang / Ganas",
+                        "Mau / Suka / Ingin",
+                        "Marah",
+                        "Takut"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Galak\u0027 dalam bahasa Palembang berarti mau, suka, atau ingin — berbeda dengan makna galak dalam bahasa Indonesia."
+    },
+    {
+        "id":  "q16",
+        "question":  "Kata \u0027Galo\u0027 berarti...",
+        "options":  [
+                        "Kosong",
+                        "Satu-satu",
+                        "Semua / Seluruhnya",
+                        "Sebagian"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Galo\u0027 artinya semua atau seluruhnya. Contoh: \u0027Habis galo\u0027 = habis semua."
+    },
+    {
+        "id":  "q17",
+        "question":  "Apa arti \u0027Amen\u0027 dalam bahasa Palembang?",
+        "options":  [
+                        "Amin (doa)",
+                        "Jika / Kalau / Apabila",
+                        "Sudah",
+                        "Belum"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Amen\u0027 dalam bahasa Palembang berarti Jika atau Kalau, bukan kata penutup doa."
+    },
+    {
+        "id":  "q18",
+        "question":  "Bagaimana cara mengatakan \u0027Mari\u0027 atau \u0027Ayo\u0027 dalam bahasa Palembang?",
+        "options":  [
+                        "Agek",
+                        "Dang",
+                        "Payo / Ayo",
+                        "Katek"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Payo\u0027 atau \u0027Ayo\u0027 adalah kata ajakan dalam bahasa Palembang yang berarti Mari atau Ayo."
+    },
+    {
+        "id":  "q19",
+        "question":  "Apa arti \u0027Kangan\u0027 dalam bahasa Palembang?",
+        "options":  [
+                        "Lapar",
+                        "Kenyang",
+                        "Rindu / Kangen",
+                        "Lelah"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Kangan\u0027 berarti rindu atau kangen. Contoh: \u0027Aku kangan nak balik ke dusun\u0027 = Aku rindu ingin pulang ke kampung."
+    },
+    {
+        "id":  "q20",
+        "question":  "Kata \u0027Ludes\u0027 digunakan untuk menggambarkan...",
+        "options":  [
+                        "Penuh sesak",
+                        "Habis total tidak tersisa",
+                        "Sangat besar",
+                        "Sangat kecil"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Ludes\u0027 berarti habis total atau tidak tersisa. Contoh: \u0027Makanan ludes\u0027 = makanan habis semua."
+    },
+    {
+        "id":  "q21",
+        "question":  "Apa arti \u0027Iwan\u0027 dalam bahasa Palembang?",
+        "options":  [
+                        "Ayam",
+                        "Kambing",
+                        "Ikan",
+                        "Sapi"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Iwan\u0027 dalam bahasa Palembang berarti ikan. Sungai Musi Palembang terkenal dengan iwan belidanya."
+    },
+    {
+        "id":  "q22",
+        "question":  "Kata \u0027Kito\u0027 dalam bahasa Palembang berarti...",
+        "options":  [
+                        "Kamu",
+                        "Dia",
+                        "Kita / Kami",
+                        "Mereka"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Kito\u0027 adalah kata ganti untuk Kita atau Kami yang bersifat inklusif."
+    },
+    {
+        "id":  "q23",
+        "question":  "Apa arti \u0027Jingok\u0027 dalam bahasa Palembang?",
+        "options":  [
+                        "Dengar",
+                        "Lihat / Pandang",
+                        "Cium",
+                        "Raba"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Jingok\u0027 berarti melihat atau memandang. Contoh: \u0027Coba kau jingok\u0027 = Coba kamu lihat."
+    },
+    {
+        "id":  "q24",
+        "question":  "Kata \u0027Buri\u0027 berarti...",
+        "options":  [
+                        "Depan",
+                        "Samping",
+                        "Belakang",
+                        "Atas"
+                    ],
+        "correct":  2,
+        "explanation":  "\u0027Buri\u0027 berarti belakang. \u0027Di buri ruma\u0027 artinya di belakang rumah."
+    },
+    {
+        "id":  "q25",
+        "question":  "Apa arti kata seru \u0027Ya\u0027am\u0027 dalam bahasa Palembang?",
+        "options":  [
+                        "Semangat!",
+                        "Ya ampun! (ekspresi terkejut/heran)",
+                        "Ayo!",
+                        "Selamat!"
+                    ],
+        "correct":  1,
+        "explanation":  "\u0027Ya\u0027am\u0027 adalah kata seru yang mengungkapkan rasa heran atau terkejut, serupa dengan \u0027Ya ampun\u0027 dalam bahasa Indonesia."
+    }
+];
+    const cultureArticles = [
+    {
+        "id":  "art1",
+        "title":  "Wong Kito Galo",
+        "subtitle":  "Semangat Kebersamaan Masyarakat Palembang",
+        "content":  "Slogan \u0027Wong Kito Galo\u0027 merupakan cerminan keramahan dan rasa kebersamaan tinggi masyarakat Sumatera Selatan. Bahasa Palembang memiliki dua tingkatan utama yaitu Bahasa Palembang Halus (Alus) yang digunakan untuk acara adat dan orang tua, serta Bahasa Palembang Sehari-hari (Pasaran) yang populer dengan ciri khas akhiran huruf \u0027o\u0027.",
+        "tag":  "Ungkapan Khas",
+        "iconName":  "People"
+    },
+    {
+        "id":  "art2",
+        "title":  "Keindahan Kain Songket",
+        "subtitle":  "Ratu Kain Tradisional Nusantara",
+        "content":  "Kain Songket Palembang ditenun menggunakan benang emas dan perak dengan motif geometris yang sarat akan makna filosofis. Keindahan Songket telah diakui secara nasional dan internasional sebagai simbol kemewahan serta keagungan budaya Kesultanan Palembang Darussalam.",
+        "tag":  "Kerajinan",
+        "iconName":  "Star"
+    },
+    {
+        "id":  "art3",
+        "title":  "Kenikmatan Pempek \u0026 Cuko",
+        "subtitle":  "Warisan Kuliner Kebanggaan",
+        "content":  "Pempek adalah kuliner khas berbasis olahan ikan dan sagu yang disajikan dengan kuah \u0027Cuko\u0027 berwarna hitam kecokelatan yang memadukan rasa pedas, asam, dan manis dari gula aren asli serta cabai rawit.",
+        "tag":  "Kuliner",
+        "iconName":  "Restaurant"
+    },
+    {
+        "id":  "art4",
+        "title":  "Rumah Limas Palembang",
+        "subtitle":  "Arsitektur Panggung Penuh Filosofi",
+        "content":  "Rumah Limas adalah rumah adat Palembang berbentuk panggung yang bertingkat-tingkat (kijing) melambangkan stratifikasi sosial masyarakat. Bagian \u0027garang\u0027 (teras) digunakan untuk menerima tamu, sedangkan ruangan dalam mencerminkan kesakralan adat istiadat setempat.",
+        "tag":  "Arsitektur",
+        "iconName":  "Home"
+    },
+    {
+        "id":  "art5",
+        "title":  "Tradisi Munggah Ramadan",
+        "subtitle":  "Menyambut Bulan Suci Bersama",
+        "content":  "Tradisi \u0027Munggah\u0027 adalah kebiasaan masyarakat Palembang menyambut datangnya bulan Ramadan dengan berkumpul bersama keluarga dan kerabat untuk berdoa bersama, makan makanan khas, serta saling memaafkan sebelum menjalankan ibadah puasa.",
+        "tag":  "Tradisi",
+        "iconName":  "Star"
+    }
+];
+    const conversationList = [
+    {
+        "dialogues":  [
+                          {
+                              "speaker":  "Ahmad",
+                              "indonesia":  "Oi Agus! Apa kabar saudara? Lama tidak bertemu!",
+                              "palembang":  "Oi Agus! Apo kabar dulur? Lamo dak ketemu!"
+                          },
+                          {
+                              "speaker":  "Agus",
+                              "indonesia":  "Alhamdulillah sehat Mad. Kamu dari mana saja?",
+                              "palembang":  "Alhamdulillah sehat Mad. Kau dari mano bae?"
+                          },
+                          {
+                              "speaker":  "Ahmad",
+                              "indonesia":  "Saya baru pulang dari pasar membeli kain songket.",
+                              "palembang":  "Aku baru balik dari pasar beli kain songket."
+                          },
+                          {
+                              "speaker":  "Agus",
+                              "indonesia":  "Wah cantik sekali! Kapan kita bisa ngopi bareng?",
+                              "palembang":  "Wah cindo nian! Kapan kito pacak ngopi bareng?"
+                          },
+                          {
+                              "speaker":  "Ahmad",
+                              "indonesia":  "Nanti sore ayo kita bertemu di Benteng Kuto Besak!",
+                              "palembang":  "Agek sore laju kito ketemu di Kuto Besak!"
+                          }
+                      ],
+        "title":  "Menyapa Teman Lama",
+        "category":  "Sapaan",
+        "description":  "Percakapan dua teman yang tidak sengaja bertemu di Jakabaring",
+        "id":  "c1"
+    },
+    {
+        "dialogues":  [
+                          {
+                              "speaker":  "Pembeli",
+                              "indonesia":  "Bibi, ada pempek kapal selam tidak hari ini?",
+                              "palembang":  "Bicik, ada pempek kapal selam dak hari ini?"
+                          },
+                          {
+                              "speaker":  "Bicik Pempek",
+                              "indonesia":  "Ada nak, masih hangat baru diangkat. Mau berapa?",
+                              "palembang":  "Ada nak, masih hangat baru diangkat. Nak berapa?"
+                          },
+                          {
+                              "speaker":  "Pembeli",
+                              "indonesia":  "Beli dua kapal selam sama tujuh pempek kulit.",
+                              "palembang":  "Beli dua kapal selam samo pitu pempek kulit."
+                          },
+                          {
+                              "speaker":  "Bicik Pempek",
+                              "indonesia":  "Kuah cukonya mau yang pedas sekali atau yang sedang?",
+                              "palembang":  "Cukonyo nak yang pedas nian apo yang sedang?"
+                          },
+                          {
+                              "speaker":  "Pembeli",
+                              "indonesia":  "Yang pedas sekali bibi, supaya enak menyeruputnya!",
+                              "palembang":  "Yang pedas nian bicik, biar lemak nghirupnyo!"
+                          }
+                      ],
+        "title":  "Beli Pempek di Kedai",
+        "category":  "Kuliner",
+        "description":  "Percakapan membeli pempek asli Palembang di kedai lokal",
+        "id":  "c2"
+    },
+    {
+        "dialogues":  [
+                          {
+                              "speaker":  "Rian",
+                              "indonesia":  "Paman, LRT ini berhenti di Stasiun Ampera tidak?",
+                              "palembang":  "Mang, LRT ini berhenti di Stasiun Ampera dak?"
+                          },
+                          {
+                              "speaker":  "Penumpang",
+                              "indonesia":  "Iya dek, berhenti tepat di samping Jembatan Ampera.",
+                              "palembang":  "Iyo dek, berhenti tepat di samping Jembatan Ampera."
+                          },
+                          {
+                              "speaker":  "Rian",
+                              "indonesia":  "Berapa ongkosnya kalau dari Bandara?",
+                              "palembang":  "Berapo ongkosnyo kalo dari Bandara?"
+                          },
+                          {
+                              "speaker":  "Penumpang",
+                              "indonesia":  "Cuma sepuluh ribu rupiah, murah sekali dan cepat!",
+                              "palembang":  "Cuma sepuluh ribu rupiah, murah nian dan gancang!"
+                          }
+                      ],
+        "title":  "Naik LRT Palembang",
+        "category":  "Transportasi",
+        "description":  "Dialog saat naik kereta ringan LRT dari Bandara ke Ampera",
+        "id":  "c3"
+    },
+    {
+        "dialogues":  [
+                          {
+                              "speaker":  "Ebok",
+                              "indonesia":  "Mari kita ke pasar, air minum di rumah sudah tidak ada.",
+                              "palembang":  "Payo kito ke pasar, ayek minum di ruma la katek."
+                          },
+                          {
+                              "speaker":  "Anak",
+                              "indonesia":  "Siap Bu! Mau beli apa saja hari ini?",
+                              "palembang":  "Siyap Bok! Nak beli apo bae hari ni?"
+                          },
+                          {
+                              "speaker":  "Ebok",
+                              "indonesia":  "Beli air, sayur, sama ikan. Jangan sembarangan beli barang.",
+                              "palembang":  "Beli banyu, sayur, samo iwan. Jangan baseng beli barang."
+                          },
+                          {
+                              "speaker":  "Anak",
+                              "indonesia":  "Harga ikan hari ini mahal tidak Bu?",
+                              "palembang":  "Hargo iwan hari ni mahal dak Bok?"
+                          },
+                          {
+                              "speaker":  "Ebok",
+                              "indonesia":  "Selisih sedikit dari kemarin. Cepat kita berangkat, langit sudah mendung.",
+                              "palembang":  "Kacek dikit dari maren. Gancang kito berangkat, langit la gabak."
+                          }
+                      ],
+        "title":  "Di Pasar Tradisional",
+        "category":  "Kehidupan Sehari-hari",
+        "description":  "Percakapan ibu dan anak di pasar tradisional Palembang",
+        "id":  "c4"
+    },
+    {
+        "dialogues":  [
+                          {
+                              "speaker":  "Atok",
+                              "indonesia":  "Kakak, beri kakek teh hangat satu cangkir.",
+                              "palembang":  "Ayuk, njuk atok teh anget sekok."
+                          },
+                          {
+                              "speaker":  "Ayuk",
+                              "indonesia":  "Siap Kek. Kakek sedang apa di teras?",
+                              "palembang":  "Siyap Tok. Atok dang ngapo di garang?"
+                          },
+                          {
+                              "speaker":  "Atok",
+                              "indonesia":  "Santai saja, mendengar suara air sungai. Enak sekali.",
+                              "palembang":  "Santo bae, ngeringok suaro ayek sungai. Lemak nian."
+                          },
+                          {
+                              "speaker":  "Ayuk",
+                              "indonesia":  "Awan sudah tebal Kek, tanda mau hujan.",
+                              "palembang":  "Aban la tebel Tok, tando nak ujan."
+                          },
+                          {
+                              "speaker":  "Atok",
+                              "indonesia":  "Iya, kita masuk ke dalam dulu lah.",
+                              "palembang":  "Iyo, kito masuk ke jabo dulu lah."
+                          }
+                      ],
+        "title":  "Ngobrol di Garang Rumah",
+        "category":  "Keluarga",
+        "description":  "Percakapan santai keluarga Palembang di teras rumah panggung",
+        "id":  "c5"
+    }
+];
+
+    // Deduplicate words by id
+    const wordList = [];
+    const seenIds = new Set();
+    rawWords.forEach(w => {
+      if (!seenIds.has(w.id)) {
+        seenIds.add(w.id);
+        wordList.push(w);
+      }
+    });
+
+    const categoryMap = {
+      'ALL': 'Semua',
+      'SEHARI_HARI': 'Sehari-hari',
+      'KATA_SIFAT': 'Kata Sifat',
+      'KATA_KERJA': 'Kata Kerja',
+      'KELUARGA': 'Keluarga',
+      'KULINER_BUDAYA': 'Kuliner & Budaya',
+      'KATA_BILANGAN': 'Kata Bilangan',
+      'PARTIKEL': 'Partikel',
+      'KATA_SERU': 'Kata Seru',
+      'KATA_KETERANGAN': 'Kata Keterangan',
+      'KATA_GANTI': 'Kata Ganti',
+      'KATA_TANYA': 'Kata Tanya',
+      'KATA_BENDA': 'Kata Benda'
+    };
+
+    // State
     let favorites = JSON.parse(localStorage.getItem('palembang_favs') || '[]');
     let currentCategory = 'ALL';
+    let searchQuery = '';
+    let isFullMode = false;
 
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('liveClock').textContent = `${h}:${m}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function toggleViewMode() {
+      isFullMode = !isFullMode;
+      const frame = document.getElementById('deviceFrame');
+      const btn = document.getElementById('viewToggleBtn');
+      if (isFullMode) {
+        frame.classList.add('full-mode');
+        btn.textContent = 'ðŸ–¥ï¸ Layar Penuh';
+      } else {
+        frame.classList.remove('full-mode');
+        btn.textContent = 'ðŸ“± Mode HP';
+      }
+    }
+
+    // Tab Navigation
     function switchTab(tabId) {
       document.querySelectorAll('.screen-content').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-      document.getElementById('screen-' + tabId).classList.add('active');
+      const targetScreen = document.getElementById('screen-' + tabId);
+      if (targetScreen) targetScreen.classList.add('active');
+
       const tabs = ['home', 'dictionary', 'conversation', 'quiz', 'culture'];
       const index = tabs.indexOf(tabId);
       if (index !== -1) {
         document.querySelectorAll('.nav-item')[index].classList.add('active');
       }
+
+      // Scroll viewport back to top
+      document.querySelector('.screen-viewport').scrollTop = 0;
     }
 
+    // Bookmark Toggle
     function toggleFavorite(id) {
       if (favorites.includes(id)) {
         favorites = favorites.filter(f => f !== id);
@@ -637,128 +3975,319 @@
         favorites.push(id);
       }
       localStorage.setItem('palembang_favs', JSON.stringify(favorites));
-      renderDictionary();
-      renderFavorites();
+
+      renderWordOfDay();
+      renderFavoritesList();
+      renderDictionaryWords();
     }
 
-    function filterCategory(cat, el) {
-      currentCategory = cat;
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      renderDictionary();
-    }
+    // HTML Generator for WordCard
+    function createWordCardHtml(word) {
+      const isFav = favorites.includes(word.id);
+      const catDisplayName = categoryMap[word.category] || word.category;
 
-    function renderDictionary() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      const container = document.getElementById('dictionaryList');
-      container.innerHTML = '';
+      const bookmarkSvg = isFav
+        ? `<svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>`
+        : `<svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/></svg>`;
 
-      const filtered = dictionaryData.filter(w => {
-        const matchCat = currentCategory === 'ALL' || w.cat === currentCategory;
-        const matchSearch = w.palembang.toLowerCase().includes(q) || w.indonesia.toLowerCase().includes(q);
-        return matchCat && matchSearch;
-      });
-
-      filtered.forEach(w => {
-        const isFav = favorites.includes(w.id);
-        container.innerHTML += `
-          <div class="word-card">
-            <div class="word-header">
-              <div>
-                <span class="palembang-term">${w.palembang}</span>
-                <span class="phonetic">${w.phonetic}</span>
-              </div>
-              <button class="star-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${w.id}')">★</button>
+      return `
+        <div class="word-card">
+          <div class="word-header">
+            <div class="word-header-left">
+              <span class="palembang-term">${escapeHtml(word.palembang)}</span>
+              <span class="phonetic">${escapeHtml(word.phonetic)}</span>
             </div>
-            <div class="meaning">Arti: ${w.indonesia}</div>
-            <div class="example-box">
-              <div class="example-palembang">"${w.exP}"</div>
-              <div class="example-indonesia">(${w.exI})</div>
-            </div>
+            <button class="bookmark-btn ${isFav ? 'active' : ''}" title="Simpan Kata" onclick="toggleFavorite('${word.id}')">
+              ${bookmarkSvg}
+            </button>
           </div>
-        `;
-      });
+          <div class="meaning-text">Arti: ${escapeHtml(word.indonesia)}</div>
+          <div class="example-container">
+            <div class="example-palembang">"${escapeHtml(word.examplePalembang)}"</div>
+            <div class="example-indonesia">(${escapeHtml(word.exampleIndonesia)})</div>
+          </div>
+          <div class="suggestion-chip">${catDisplayName}</div>
+        </div>
+      `;
     }
 
-    function renderFavorites() {
-      const container = document.getElementById('favorites-list');
-      const favWords = dictionaryData.filter(w => favorites.includes(w.id));
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Render Home: Word Of The Day ("Pacak")
+    function renderWordOfDay() {
+      const wordOfDay = wordList.find(w => w.palembang === 'Pacak') || wordList[0];
+      const container = document.getElementById('wordOfDayContainer');
+      if (container && wordOfDay) {
+        container.innerHTML = createWordCardHtml(wordOfDay);
+      }
+    }
+
+    // Render Home: Favorites
+    function renderFavoritesList() {
+      const container = document.getElementById('favoritesListContainer');
+      const favWords = wordList.filter(w => favorites.includes(w.id));
+
       if (favWords.length === 0) {
-        container.innerHTML = `<p style="font-size: 13px; color: #888; background: white; padding: 12px; border-radius: 12px;">Klik ikon bintang ★ di Kamus untuk menyimpan kata favorit Anda di sini.</p>`;
+        container.innerHTML = `
+          <div class="empty-fav-card">
+            Belum ada kata favorit yang disimpan. Klik ikon bookmark pada kartu kata untuk menyimpannya di sini!
+          </div>
+        `;
         return;
       }
-      container.innerHTML = '';
-      favWords.forEach(w => {
-        container.innerHTML += `
-          <div class="word-card">
-            <div class="word-header">
-              <div>
-                <span class="palembang-term">${w.palembang}</span>
-                <span class="phonetic">${w.phonetic}</span>
-              </div>
-              <button class="star-btn active" onclick="toggleFavorite('${w.id}')">★</button>
+
+      container.innerHTML = favWords.map(w => createWordCardHtml(w)).join('');
+    }
+
+    // Render Dictionary: Chips
+    function initCategoryChips() {
+      const row = document.getElementById('categoryChipsRow');
+      row.innerHTML = '';
+      Object.keys(categoryMap).forEach(key => {
+        const chip = document.createElement('div');
+        chip.className = `filter-chip ${key === currentCategory ? 'active' : ''}`;
+        chip.textContent = categoryMap[key];
+        chip.onclick = () => {
+          currentCategory = key;
+          document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          renderDictionaryWords();
+        };
+        row.appendChild(chip);
+      });
+    }
+
+    function handleSearchInput(val) {
+      searchQuery = val.trim().toLowerCase();
+      const clearBtn = document.getElementById('searchClearBtn');
+      clearBtn.style.display = searchQuery ? 'flex' : 'none';
+      renderDictionaryWords();
+    }
+
+    function clearSearch() {
+      document.getElementById('dictSearchInput').value = '';
+      handleSearchInput('');
+    }
+
+    function renderDictionaryWords() {
+      const container = document.getElementById('dictionaryWordsList');
+      const countLabel = document.getElementById('resultCountLabel');
+
+      const filtered = wordList.filter(w => {
+        const matchesCategory = (currentCategory === 'ALL' || w.category === currentCategory);
+        const matchesSearch = !searchQuery || 
+          w.palembang.toLowerCase().includes(searchQuery) ||
+          w.indonesia.toLowerCase().includes(searchQuery);
+        return matchesCategory && matchesSearch;
+      });
+
+      countLabel.textContent = `Menampilkan ${filtered.length} Kata`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-fav-card" style="text-align:center; padding: 24px;">
+            ðŸ” Kata tidak ditemukan untuk "${escapeHtml(searchQuery)}". Coba kata kunci lainnya.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(w => createWordCardHtml(w)).join('');
+    }
+
+    // Render Conversations
+    function renderConversations() {
+      const container = document.getElementById('conversationsContainer');
+      container.innerHTML = conversationList.map(c => `
+        <div class="conversation-card" onclick="this.classList.toggle('expanded')">
+          <div class="conversation-top-row">
+            <div class="conversation-info">
+              <span class="conversation-category">${escapeHtml(c.category)}</span>
+              <div class="conversation-title">${escapeHtml(c.title)}</div>
+              <div class="conversation-desc">${escapeHtml(c.description)}</div>
             </div>
-            <div class="meaning">Arti: ${w.indonesia}</div>
+            <div class="conversation-chevron">
+              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+            </div>
           </div>
-        `;
-      });
+          <div class="dialogues-wrapper">
+            ${c.dialogues.map(d => `
+              <div class="dialogue-bubble">
+                <div class="speaker-name">${escapeHtml(d.speaker)}</div>
+                <div class="palembang-text">"${escapeHtml(d.palembang)}"</div>
+                <div class="indonesia-text">Terjemahan: ${escapeHtml(d.indonesia)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
     }
 
-    // Quiz Logic
-    const quizQuestions = [
-      { q: "Apa arti kata 'Pacak' dalam bahasa Palembang?", options: ["Tidak bisa", "Bisa / Sanggup", "Tidur", "Pergi"], correct: 1 },
-      { q: "Kata 'Lemak' dalam kalimat 'Cuko pempek ini lemak nian' berarti...", options: ["Pedas", "Manis", "Enak / Lezat", "Asin"], correct: 2 },
-      { q: "Sapaan ramah untuk paman di Palembang adalah...", options: ["Bicik", "Mangcek", "Budak", "Dulur"], correct: 1 }
-    ];
-    let qIndex = 0;
-    let quizScore = 0;
-
-    function renderQuiz() {
-      const box = document.getElementById('quizBox');
-      if (qIndex >= quizQuestions.length) {
-        box.innerHTML = `
-          <div style="text-align:center; padding:20px;">
-            <div style="font-size:48px;">🎉</div>
-            <h2 style="margin:12px 0; color:var(--primary);">Kuis Selesai!</h2>
-            <p style="font-size:16px; font-weight:700;">Skor Anda: ${quizScore} / ${quizQuestions.length * 20}</p>
-            <button class="btn-primary" onclick="qIndex=0;quizScore=0;renderQuiz();">Coba Lagi</button>
+    // Render Culture Articles
+    function renderCultureArticles() {
+      const container = document.getElementById('cultureArticlesContainer');
+      container.innerHTML = cultureArticles.map(a => `
+        <div class="culture-card">
+          <div class="culture-tag">
+            <svg style="width:14px;height:14px;fill:#D4AF37;" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <span>${escapeHtml(a.tag)}</span>
           </div>
-        `;
+          <h2 class="culture-title">${escapeHtml(a.title)}</h2>
+          <div class="culture-subtitle">${escapeHtml(a.subtitle)}</div>
+          <div class="culture-content">${escapeHtml(a.content)}</div>
+        </div>
+      `).join('');
+    }
+
+    // â”€â”€ QUIZ LOGIC (Android Compose QuizScreen replication) â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    let currentQuizIndex = 0;
+    let selectedOptionIndex = null;
+    let quizScore = 0;
+    let isAnswerSubmitted = false;
+
+    function renderCurrentQuiz() {
+      const totalQ = quizQuestions.length;
+      if (currentQuizIndex >= totalQ) {
+        showQuizFinish();
         return;
       }
 
-      const current = quizQuestions[qIndex];
-      let html = `<h4 style="margin-bottom:16px;">Soal ${qIndex+1} dari ${quizQuestions.length}:<br><span style="font-size:16px; color:var(--primary);">${current.q}</span></h4>`;
-      current.options.forEach((opt, idx) => {
-        html += `<div class="quiz-option" onclick="answerQuiz(${idx}, this)">${opt}</div>`;
+      document.getElementById('quizActiveContainer').style.display = 'block';
+      document.getElementById('quizFinishContainer').style.display = 'none';
+
+      const current = quizQuestions[currentQuizIndex];
+      const progressPercent = Math.round(((currentQuizIndex + 1) / totalQ) * 100);
+
+      document.getElementById('quizProgressFill').style.width = progressPercent + '%';
+      document.getElementById('quizQuestionNumber').textContent = `Pertanyaan ${currentQuizIndex + 1} dari ${totalQ}`;
+      document.getElementById('quizQuestionText').textContent = current.question;
+
+      const optsContainer = document.getElementById('quizOptionsContainer');
+      optsContainer.innerHTML = current.options.map((opt, idx) => `
+        <div class="quiz-option-card ${selectedOptionIndex === idx ? 'selected' : ''}" onclick="selectQuizOption(${idx})">
+          <div class="quiz-radio">
+            <div class="quiz-radio-inner"></div>
+          </div>
+          <span>${escapeHtml(opt)}</span>
+        </div>
+      `).join('');
+
+      // Explanation box
+      const expBox = document.getElementById('quizExplanationBox');
+      expBox.style.display = 'none';
+
+      // Submit button
+      const submitBtn = document.getElementById('quizSubmitBtn');
+      submitBtn.disabled = selectedOptionIndex === null;
+      submitBtn.textContent = 'Periksa Jawaban';
+      isAnswerSubmitted = false;
+    }
+
+    function selectQuizOption(idx) {
+      if (isAnswerSubmitted) return;
+      selectedOptionIndex = idx;
+
+      document.querySelectorAll('.quiz-option-card').forEach((el, i) => {
+        if (i === idx) {
+          el.classList.add('selected');
+        } else {
+          el.classList.remove('selected');
+        }
       });
-      box.innerHTML = html;
+
+      document.getElementById('quizSubmitBtn').disabled = false;
     }
 
-    function answerQuiz(idx, el) {
-      const current = quizQuestions[qIndex];
-      const options = document.querySelectorAll('.quiz-option');
-      options.forEach(o => o.style.pointerEvents = 'none');
+    function handleQuizAction() {
+      const current = quizQuestions[currentQuizIndex];
+      const submitBtn = document.getElementById('quizSubmitBtn');
+      const totalQ = quizQuestions.length;
 
-      if (idx === current.correct) {
-        el.classList.add('correct');
-        quizScore += 20;
+      if (!isAnswerSubmitted) {
+        if (selectedOptionIndex === null) return;
+        isAnswerSubmitted = true;
+
+        const optionsCards = document.querySelectorAll('.quiz-option-card');
+        const isCorrect = selectedOptionIndex === current.correct;
+
+        if (isCorrect) {
+          quizScore += 20;
+          optionsCards[selectedOptionIndex].classList.add('correct-answer');
+        } else {
+          optionsCards[selectedOptionIndex].classList.add('wrong-answer');
+          optionsCards[current.correct].classList.add('correct-answer');
+        }
+
+        // Show explanation
+        const expBox = document.getElementById('quizExplanationBox');
+        expBox.innerHTML = `💡 <b>Penjelasan:</b> ${escapeHtml(current.explanation)}`;
+        expBox.style.display = 'block';
+
+        if (currentQuizIndex < totalQ - 1) {
+          submitBtn.textContent = 'Pertanyaan Selanjutnya';
+        } else {
+          submitBtn.textContent = 'Lihat Hasil Kuis';
+        }
       } else {
-        el.classList.add('wrong');
-        options[current.correct].classList.add('correct');
+        // Next Question
+        if (currentQuizIndex < totalQ - 1) {
+          currentQuizIndex++;
+          selectedOptionIndex = null;
+          isAnswerSubmitted = false;
+          renderCurrentQuiz();
+        } else {
+          showQuizFinish();
+        }
       }
-
-      setTimeout(() => {
-        qIndex++;
-        renderQuiz();
-      }, 1400);
     }
 
-    // Init
-    renderDictionary();
-    renderFavorites();
-    renderQuiz();
+    function showQuizFinish() {
+      document.getElementById('quizActiveContainer').style.display = 'none';
+      const finishContainer = document.getElementById('quizFinishContainer');
+      finishContainer.style.display = 'block';
+
+      const maxScore = quizQuestions.length * 20;
+      const feedback = quizScore >= 80 
+        ? "Hebat nian! Kau sudah cakep bahasa Palembang!" 
+        : "Bagus! Terus tingkatkan latihan kosakata Palembang!";
+
+      finishContainer.innerHTML = `
+        <div class="quiz-finish-card">
+          <svg style="width:68px;height:68px;fill:var(--md-sys-color-success);margin-bottom:12px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <h2 style="font-size:22px; font-weight:800; color:#1C1B1F;">Kuis Selesai! 🎉</h2>
+          <div class="quiz-finish-score">Skor Anda: ${quizScore} / ${maxScore}</div>
+          <p style="font-size:14px; color:#555; margin-bottom:20px; line-height:1.5;">${feedback}</p>
+          <button class="btn-compose" onclick="restartQuiz()">
+            <svg style="width:20px;height:20px;fill:currentColor;" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            <span>Coba Kuis Lagi</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function restartQuiz() {
+      currentQuizIndex = 0;
+      selectedOptionIndex = null;
+      quizScore = 0;
+      isAnswerSubmitted = false;
+      renderCurrentQuiz();
+    }
+
+    // ── INITIALIZATION ──────────────────────────────────────────────
+    renderWordOfDay();
+    renderFavoritesList();
+    initCategoryChips();
+    renderDictionaryWords();
+    renderConversations();
+    renderCurrentQuiz();
+    renderCultureArticles();
   </script>
 </body>
 </html>
-
